@@ -28,9 +28,9 @@ public class Bot {
 
     public void preflop(Game g) {
         //first read the hand
-        int x = g.getCurrentPlayer().getHand().getFirst().getCardNum();//smaller card
-        int y = g.getCurrentPlayer().getHand().getLast().getCardNum(); //bigger card
-        if(g.getCurrentPlayer().getHand().getFirst().getCardSuit()==g.getCurrentPlayer().getHand().getLast().getCardSuit()) {//suited hand
+        int x = g.getCurrentPlayer().getHand().get(0).getCardNum();//smaller card
+        int y = g.getCurrentPlayer().getHand().get(g.getCurrentPlayer().getHand().size()-1).getCardNum(); //bigger card
+        if(g.getCurrentPlayer().getHand().get(0).getCardSuit()==g.getCurrentPlayer().getHand().get(g.getCurrentPlayer().getHand().size()-1).getCardSuit()) {//suited hand
             int temp = y;
             y = x;
             x = temp;
@@ -124,8 +124,8 @@ public class Bot {
             }
             //blocking the players cards
             for(int i = 0; i<g.table.length; i++) {
-                d.block(g.table[i].getHand().getFirst());
-                d.block(g.table[i].getHand().getLast());
+                d.block(g.table[i].getHand().get(0));
+                d.block(g.table[i].getHand().get(g.table[i].getHand().size()-1));
             }
             for(int k = 0; k<cardsMissing; k++) {
                 //deal cards
@@ -137,7 +137,7 @@ public class Bot {
             }
             for(int k = 0; k<cardsMissing; k++) {
                 //deal cards
-                comm.removeLast();
+                comm.remove(comm.size()-1);
             }
         }
         for(int i = 0; i<equities.length; i++) {

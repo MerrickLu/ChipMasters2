@@ -266,12 +266,12 @@ public class Game {
         }
         for(int i = notfold+1; i<NUM_PLAYERS; i++) {
             if(isFold[i]) continue;
-            if(allHands[i].compareTo(allHands[maxloc.getFirst()])>0) {
+            if(allHands[i].compareTo(allHands[maxloc.get(0)])>0) {
                 //stronger hand
                 maxloc.clear();
                 maxloc.add(i);
             }
-            else if(allHands[i].compareTo(allHands[maxloc.getFirst()])==0) {
+            else if(allHands[i].compareTo(allHands[maxloc.get(0)])==0) {
                 //same hand
                 maxloc.add(i);
             }

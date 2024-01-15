@@ -78,9 +78,9 @@ public class TotalHand {
         ArrayList<Card> flush = getFlushed();
         if(flush==null) return null;
         while(flush.size()>5) {//remove the smallest element until there are only 5 left
-            flush.removeFirst();
+            flush.remove(0);
         }
-        if(flush.getFirst().getCardNum()==0) return null;
+        if(flush.get(0).getCardNum()==0) return null;
         else {
             strength = HandStrength.FLUSH;
             return flush;
@@ -111,7 +111,7 @@ public class TotalHand {
         if(count<5) return null;
 
         for(int j = minLoc; j<minLoc+5; j++) {
-            straight.add(nums.get(j).getFirst());
+            straight.add(nums.get(j).get(0));
         }
         strength = HandStrength.STRAIGHT;
         return straight;
@@ -123,7 +123,7 @@ public class TotalHand {
         ArrayList<Card> straightFlush = flush.getStraight();//gets a straight from all the suited cards
         if(straightFlush==null) return null;
 
-        if(straightFlush.getFirst().getCardNum()==9) {
+        if(straightFlush.get(0).getCardNum()==9) {
             //smallest card is a 10 -> royal flush
             strength = HandStrength.ROYAL_FLUSH;
         }
