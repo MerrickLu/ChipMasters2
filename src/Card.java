@@ -1,16 +1,16 @@
-public class Card implements Cloneable{
+public class Card implements Cloneable {
     // wsg
     public static final String CARDS = "A23456789TJQKA";
-    public static final String[] SUITS = {"Diamonds", "Clubs", "Hearts", "Spades"};
-    private int cardNum; //number from 0-12
-    private int cardSuit; //0 - diamonds, 1 - clubs, 2 - hearts, 3 - spades
+    public static final String[] SUITS = { "Diamonds", "Clubs", "Hearts", "Spades" };
+    private int cardNum; // number from 0-12
+    private int cardSuit; // 0 - diamonds, 1 - clubs, 2 - hearts, 3 - spades
 
-    public Card (int num) {
-        cardNum = num/4;//AAAA22223333 etc.
-        cardSuit = num%4;//diamonds, clubs, hearts, spades, diamonds, clubs, etc...
+    public Card(int num) {
+        cardNum = num / 4;// AAAA22223333 etc.
+        cardSuit = num % 4;// diamonds, clubs, hearts, spades, diamonds, clubs, etc...
     }
 
-    public Card (int num, int s) {
+    public Card(int num, int s) {
         cardNum = num;
         cardSuit = s;
     }
@@ -31,12 +31,12 @@ public class Card implements Cloneable{
         return (numToString(this.getCardNum()) + " of " + SUITS[this.getCardSuit()]);
     }
 
-    public Object clone()throws CloneNotSupportedException{
+    public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
 
     public boolean equals(Card c) {
-        return (cardNum==c.getCardNum() && cardSuit==c.getCardSuit());
+        return (cardNum == c.getCardNum() && cardSuit == c.getCardSuit());
     }
 
 }

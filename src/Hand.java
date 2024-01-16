@@ -17,7 +17,7 @@ public class Hand {
     }
 
     public void sortHand() {
-        hand.sort((o1, o2) -> Integer.compare(o1.getCardNum(), o2.getCardNum()));//ascending order
+        hand.sort((o1, o2) -> Integer.compare(o1.getCardNum(), o2.getCardNum()));// ascending order
     }
 
     public ArrayList<Card> getHand() {
@@ -30,8 +30,8 @@ public class Hand {
 
     public String toString() {
         String str = "";
-        for(Card c: hand) {
-            str+=c + "\n";
+        for (Card c : hand) {
+            str += c + "\n";
         }
         return str;
     }

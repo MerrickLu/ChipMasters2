@@ -9,26 +9,26 @@ public class Player extends Hand {
     }
 
     public void bet(int n) {
-        stack-=n;
-        inPot+=n;
+        stack -= n;
+        inPot += n;
     }
 
     public int getStack() {
         return stack;
     }
 
-
     public void resetHand() {
-        super.clear();//clear hand
+        super.clear();// clear hand
         inPot = 0;
     }
 
     public void addToStack(int i) {
-        stack+=i;
+        stack += i;
     }
-    public String toString(){
+
+    public String toString() {
         String str = "";
-        for(Card c: super.getHand()) {
+        for (Card c : super.getHand()) {
             str += (c + ", ");
         }
 
