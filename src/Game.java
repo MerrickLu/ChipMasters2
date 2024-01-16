@@ -72,22 +72,35 @@ public class Game {
         isFlop = true;
         dealHands();
         System.out.println("Your hand is: " + table[yourPos].getHand() + "\n");
+        int min = Math.min(table[sbPos].getStack(), sb);
+        bets[sbPos] = min;
+        if(min != sb) {
+            System.out.println(sbPos + " is all in ");
+            isAllIn[sbPos] = true;
+        }
+        else {
+            System.out.println(sbPos + " bets " + Math.min(table[sbPos].getStack(), sb));
+        }
 
-        bets[sbPos] = sb;
-        System.out.println(sbPos + " bets " + sb);
-        bets[(sbPos + 1) % NUM_PLAYERS] = bb;
-        System.out.println((sbPos + 1) % NUM_PLAYERS + " bets " + bb);
+        min = Math.min(table[(sbPos+1)%NUM_PLAYERS].getStack(), bb);
+        bets[(sbPos + 1) % NUM_PLAYERS] = min;
+        if(min!=bb) {
+            System.out.println(sbPos + " is all in ");
+            isAllIn[(sbPos+1)%NUM_PLAYERS] = true;
+        }
+        else {
+            System.out.println((sbPos + 1) % NUM_PLAYERS + " bets " + bb);
+        }
         toCall = bb;
         minRaise = sb + bb;
         currentPos = (sbPos + 2) % NUM_PLAYERS;
 
         bettingRound();
-        comm.addToHand(d.deal());
-        comm.addToHand(d.deal());
-        comm.addToHand(d.deal());
-        System.out.println("\nFlop comes " + comm);
-
         if(checkNumPlayers()>1) {
+            comm.addToHand(d.deal());
+            comm.addToHand(d.deal());
+            comm.addToHand(d.deal());
+            System.out.println("\nFlop comes " + comm);
             turn();
         }
     }
@@ -95,10 +108,9 @@ public class Game {
     public void turn() {
         isFlop = false;
         bettingRound();
-        comm.addToHand(d.deal());
-        System.out.println("\nTurn comes " + comm);
-
         if(checkNumPlayers()>1) {
+            comm.addToHand(d.deal());
+            System.out.println("\nTurn comes " + comm);
             river();
         }
     }
@@ -106,9 +118,9 @@ public class Game {
     public void river() {
         isFlop = false;
         bettingRound();
-        comm.addToHand(d.deal());
-        System.out.println("\nTurn comes " + comm);
         if(checkNumPlayers()>1) {
+            comm.addToHand(d.deal());
+            System.out.println("\nRiver comes " + comm);
             bettingRound();//last betting round
         }
     }
@@ -175,9 +187,9 @@ public class Game {
     public void processWin() {
         ArrayList<Integer> winners = getWinnerIdx(comm.getHand());
         System.out.println("The winners are: " + winners);
-        System.out.println(allHands[winners.get(0)].getStringStrength());
-        for (int i = 0; i<allHands.length; i++) {
-            System.out.println(i + "'s hand was " + allHands[i].getBestHand());
+        if(checkNumPlayers()>1) System.out.println(allHands[winners.get(0)].getStringStrength());
+        for (int i = 0; i<NUM_PLAYERS; i++) {
+            System.out.println(i + "'s hand was " + table[i].getHand());
         }
         for (int i = 0; i < winners.size(); i++) {
             System.out.println(winners.get(i) + " wins " + getPot() / winners.size());
@@ -185,11 +197,17 @@ public class Game {
         }
         for(int i = 0; i<NUM_PLAYERS; i++) {
             table[i].resetHand();
-            isFold[i] = false;
+            if(table[i].getStack()==0) {
+                isFold[i] = true;
+            }
+            else {
+                isFold[i] = false;
+            }
             hasGone[i] = false;
             isAllIn[i] = false;
             System.out.println(i + "'s stack is now " + table[i].getStack());
         }
+        comm.clear();
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
     }
@@ -215,7 +233,7 @@ public class Game {
     }
 
     public void allIn() {
-        System.out.println(currentPos + " goes all in.");
+        isAllIn[currentPos] = true;
         raise(table[currentPos].getStack());
     }
 
@@ -231,7 +249,11 @@ public class Game {
             return;
         }
 
-        if (r < minRaise) {
+        if(r==table[currentPos].getStack()) {
+            System.out.println(currentPos + " goes all in for " + getCurrentPlayer().getStack() + ".");
+        }
+
+        else if (r < minRaise) {
             System.out.println("raise higher");
             return;
         }
@@ -240,9 +262,9 @@ public class Game {
 
         System.out.println(currentPos + " raises to " + r);
         // figure out how much the new minraise is now;
-        minRaise = toCall + (r - toCall) * 2;
+        minRaise = Math.max(toCall + (r - toCall) * 2, minRaise);
         bets[currentPos] = r;
-        toCall = r;
+        toCall = Math.max(toCall, r);
         nextPos();
     }
 
@@ -286,6 +308,14 @@ public class Game {
 
     public ArrayList<Integer> getWinnerIdx(ArrayList<Card> community) {
         ArrayList<Integer> maxloc = new ArrayList<>();// locations of the winners
+        if(checkNumPlayers()==1) {
+            for(int i = 0; i<NUM_PLAYERS; i++) {
+                if(!isFold[i]){
+                    maxloc.add(i);
+                    return maxloc;
+                }
+            }
+        }
         int notfold = 0;
         int maxStrength = 0;
         while (isFold[notfold])
