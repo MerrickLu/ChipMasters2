@@ -2,12 +2,15 @@ public class Card implements Cloneable {
     // wsg
     public static final String CARDS = "A23456789TJQKA";
     public static final String[] SUITS = { "Diamonds", "Clubs", "Hearts", "Spades" };
+
+    public int cardID;
     private int cardNum; // number from 0-12
     private int cardSuit; // 0 - diamonds, 1 - clubs, 2 - hearts, 3 - spades
 
     public Card(int num) {
         cardNum = num / 4;// AAAA22223333 etc.
         cardSuit = num % 4;// diamonds, clubs, hearts, spades, diamonds, clubs, etc...
+        cardID = cardSuit*13+cardNum+1;
     }
 
     public Card(int num, int s) {
