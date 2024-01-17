@@ -134,6 +134,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                 onMenu = true;
                 onSettings = false;
             }
+        } else if (onGame) {
+            game.mousePressed(e);
         }
     }
     @Override
