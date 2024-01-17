@@ -75,8 +75,13 @@ public class Game {
         isFlop = true;
         dealHands();
         System.out.println("Your hand is: " + table[yourPos].getHand() + "\n");
-        int min = Math.min(table[sbPos].getStack(), sb);
-        bets[sbPos] = min;
+        int idx = sbPos;
+        while(table[idx].getStack() == 0) {
+            idx=(idx+1)%NUM_PLAYERS;
+        }
+        int min = Math.min(table[idx].getStack(), sb);
+        bets[idx] = min;
+
         if(min != sb) {
             System.out.println(sbPos + " is all in ");
             isAllIn[sbPos] = true;
@@ -85,8 +90,12 @@ public class Game {
             System.out.println(sbPos + " bets " + Math.min(table[sbPos].getStack(), sb));
         }
 
-        min = Math.min(table[(sbPos+1)%NUM_PLAYERS].getStack(), bb);
-        bets[(sbPos + 1) % NUM_PLAYERS] = min;
+        idx = (idx+1)%NUM_PLAYERS;
+        while(table[idx].getStack() == 0) {
+            idx=(idx+1)%NUM_PLAYERS;
+        }
+        min = Math.min(table[idx].getStack(), bb);
+        bets[idx] = min;
         if(min!=bb) {
             System.out.println(sbPos + " is all in ");
             isAllIn[(sbPos+1)%NUM_PLAYERS] = true;
@@ -221,7 +230,7 @@ public class Game {
     }
 
     public void call() {
-        if (toCall > table[currentPos].getStack()) {
+        if (toCall >= table[currentPos].getStack()) {
             // this means the player is all in
             allIn();
             return;
