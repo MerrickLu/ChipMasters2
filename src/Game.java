@@ -63,8 +63,11 @@ public class Game {
         System.out.println("Position: ");
         yourPos = in.nextInt();
         while(true) {
+            d = new Deck();
+            d.shuffle();
             preflop();
             processWin();
+            sbPos = (sbPos+1)%NUM_PLAYERS;
         }
     }
 
@@ -251,6 +254,13 @@ public class Game {
 
         if(r==table[currentPos].getStack()) {
             System.out.println(currentPos + " goes all in for " + getCurrentPlayer().getStack() + ".");
+            // figure out how much the new minraise is now;
+            minRaise = Math.max(toCall + (r - toCall) * 2, minRaise);
+            bets[currentPos] = r;
+            toCall = Math.max(toCall, r);
+            System.out.println("Bet to call is " + toCall);
+            nextPos();
+            return;
         }
 
         else if (r < minRaise) {
@@ -260,11 +270,12 @@ public class Game {
 
 
 
-        System.out.println(currentPos + " raises to " + r);
+
         // figure out how much the new minraise is now;
         minRaise = Math.max(toCall + (r - toCall) * 2, minRaise);
         bets[currentPos] = r;
         toCall = Math.max(toCall, r);
+        System.out.println(currentPos + " raises to " + toCall);
         nextPos();
     }
 
@@ -318,7 +329,7 @@ public class Game {
         }
         int notfold = 0;
         int maxStrength = 0;
-        while (isFold[notfold])
+        while (notfold < NUM_PLAYERS && isFold[notfold])
             notfold++;
         maxloc.add(notfold);
 
