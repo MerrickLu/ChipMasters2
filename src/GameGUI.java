@@ -51,84 +51,79 @@ public class GameGUI {
         g.fillRect(escapeRect.x, escapeRect.y, escapeRect.width, escapeRect.height);
         // draw options button
         g.drawImage(options, buttonHeight / 2, buttonHeight / 2, buttonHeight, buttonHeight, null);
-            //draw buttons, with hover-over effect
-            if (hoveredOption == 1)
-                g.drawImage(raise1, (int) (GamePanel.GAME_WIDTH * 0.33), buttonY, buttonWidth, buttonHeight, null);
-            else g.drawImage(raise, (int) (GamePanel.GAME_WIDTH * 0.33), buttonY, buttonWidth, buttonHeight, null);
-            if (hoveredOption == 2)
-                g.drawImage(call1, (int) (GamePanel.GAME_WIDTH * 0.45), buttonY, buttonWidth, buttonHeight, null);
-            else g.drawImage(call, (int) (GamePanel.GAME_WIDTH * 0.45), buttonY, buttonWidth, buttonHeight, null);
-            if (hoveredOption == 3)
-                g.drawImage(fold1, (int) (GamePanel.GAME_WIDTH * 0.57), buttonY, buttonWidth, buttonHeight, null);
-            else g.drawImage(fold, (int) (GamePanel.GAME_WIDTH * 0.57), buttonY, buttonWidth, buttonHeight, null);
+        //draw buttons, with hover-over effect
+        if (hoveredOption == 1)
+            g.drawImage(raise1, (int) (GamePanel.GAME_WIDTH * 0.33), buttonY, buttonWidth, buttonHeight, null);
+        else g.drawImage(raise, (int) (GamePanel.GAME_WIDTH * 0.33), buttonY, buttonWidth, buttonHeight, null);
+        if (hoveredOption == 2)
+            g.drawImage(call1, (int) (GamePanel.GAME_WIDTH * 0.45), buttonY, buttonWidth, buttonHeight, null);
+        else g.drawImage(call, (int) (GamePanel.GAME_WIDTH * 0.45), buttonY, buttonWidth, buttonHeight, null);
+        if (hoveredOption == 3)
+            g.drawImage(fold1, (int) (GamePanel.GAME_WIDTH * 0.57), buttonY, buttonWidth, buttonHeight, null);
+        else g.drawImage(fold, (int) (GamePanel.GAME_WIDTH * 0.57), buttonY, buttonWidth, buttonHeight, null);
 
-            // draw text over buttons
-            try {
-                g.setFont(Font.createFont(Font.TRUETYPE_FONT, Menu.fontFile).deriveFont(18f));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            g.setFont(new Font("Garamond", Font.BOLD, 18));
-            g.setColor(Color.white);
-            g.drawString("Raise", (int) (GamePanel.GAME_WIDTH * 0.355), (int) (buttonY * 1.05));
-            g.drawString("Call", (int) (GamePanel.GAME_WIDTH * 0.48), (int) (buttonY * 1.05));
-            g.drawString("Fold", (int) (GamePanel.GAME_WIDTH * 0.6), (int) (buttonY * 1.05));
+        // draw text over buttons
+        try {
+            g.setFont(Font.createFont(Font.TRUETYPE_FONT, Menu.fontFile).deriveFont(18f));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        g.setFont(new Font("Garamond", Font.BOLD, 18));
+        g.setColor(Color.white);
+        g.drawString("Raise", (int) (GamePanel.GAME_WIDTH * 0.355), (int) (buttonY * 1.05));
+        g.drawString("Call", (int) (GamePanel.GAME_WIDTH * 0.48), (int) (buttonY * 1.05));
+        g.drawString("Fold", (int) (GamePanel.GAME_WIDTH * 0.6), (int) (buttonY * 1.05));
 
-            drawCards(g, 1, 15, GamePanel.GAME_HEIGHT - 105);
-            drawCards(g, 2, 95, GamePanel.GAME_HEIGHT - 105);
+        drawCards(g, 1, 15, GamePanel.GAME_HEIGHT - 105);
+        drawCards(g, 2, 95, GamePanel.GAME_HEIGHT - 105);
+    }
+
+
+public void drawCards(Graphics g, int cardNum, int x, int y) {
+    g.drawImage(cardMap.get(cardNum), x, y, 72, 96, null);
+
+}
+
+
+// mouse moved, called from GamePanel
+public void mouseMoved(MouseEvent e) {
+    int mouseX = e.getX();
+    int mouseY = e.getY();
+
+    // detect which option mouse is hovering over
+    if (escapeRect.contains(mouseX, mouseY)) {
+        hoveredOption = 0;
+        return;
+    }
+    for (int i = 0; i < buttonRects.length; i++) {
+        if (buttonRects[i].contains(mouseX, mouseY)) {
+            // The mouse is over this option
+            hoveredOption = i+1;
+            break;
+        }
+        else {
+            hoveredOption = -1;
         }
     }
 
-    public void drawCards(Graphics g, int cardNum, int x, int y) {
-        g.drawImage(cardMap.get(cardNum), x, y, 72, 96, null);
 
+}
+
+
+public void mousePressed(MouseEvent e) {
+    int mouseX = e.getX();
+    int mouseY = e.getY();
+    if (escapeRect.contains(mouseX, mouseY)) {
+        paused = true;
     }
+}
 
-    public void drawOptions (Graphics g){
-        g.setColor(Color.black);
-        g.fillRect((int)(GamePanel.GAME_WIDTH*0.2), (int)(GamePanel.GAME_HEIGHT*0.2), (int)(GamePanel.GAME_WIDTH*0.6),(int)(GamePanel.GAME_HEIGHT*0.6));
-
+// returns the cursor type
+public Cursor getCursor() {
+    if (hoveredOption != -1) {
+        return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR); // pointer
+    } else {
+        return Cursor.getDefaultCursor(); // normal cursor
     }
-
-    // mouse moved, called from GamePanel
-    public void mouseMoved(MouseEvent e) {
-        int mouseX = e.getX();
-        int mouseY = e.getY();
-
-        // detect which option mouse is hovering over
-        if (escapeRect.contains(mouseX, mouseY)) {
-            hoveredOption = 0;
-            return;
-        }
-        for (int i = 0; i < buttonRects.length; i++) {
-            if (buttonRects[i].contains(mouseX, mouseY)) {
-                // The mouse is over this option
-                hoveredOption = i+1;
-                break;
-            }
-            else {
-                hoveredOption = -1;
-            }
-        }
-
-
-    }
-
-
-    public void mousePressed(MouseEvent e) {
-        int mouseX = e.getX();
-        int mouseY = e.getY();
-        if (escapeRect.contains(mouseX, mouseY)) {
-            paused = true;
-        }
-    }
-
-    // returns the cursor type
-    public Cursor getCursor() {
-        if (hoveredOption != -1) {
-            return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR); // pointer
-        } else {
-            return Cursor.getDefaultCursor(); // normal cursor
-        }
-    }
+}
 }
