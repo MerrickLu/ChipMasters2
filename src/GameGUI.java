@@ -13,9 +13,15 @@ public class GameGUI {
     private Rectangle escapeRect;
     private boolean paused = false;
 
+    private int numTicks;
+    private GameAction action;
+    private boolean hasDrawn;
 
+    private int[][] cardLocations;
 
     public GameGUI() {
+        numTicks = 0;
+        hasDrawn = false;
         // load images
         TABLE = new ImageIcon("images/pokerTable.jpg").getImage();
         raise = new ImageIcon("images/buttons/raise.png").getImage();
@@ -25,6 +31,21 @@ public class GameGUI {
         fold = new ImageIcon("images/buttons/fold.png").getImage();
         fold1 = new ImageIcon("images/buttons/fold1.png").getImage();
         options = new ImageIcon("images/options.png").getImage();
+
+        cardLocations = new int[5][2];
+        cardLocations[0][0] = 45;
+        cardLocations[0][1] = GamePanel.GAME_HEIGHT-350;
+        cardLocations[1][0] = 150;
+        cardLocations[1][1] = GamePanel.GAME_HEIGHT-480;
+        cardLocations[2][0] = 425;
+        cardLocations[2][1] = GamePanel.GAME_HEIGHT-490;
+        cardLocations[3][0] = 715;
+        cardLocations[3][1] = GamePanel.GAME_HEIGHT-450;
+        cardLocations[4][0] = 750;
+        cardLocations[4][1] = GamePanel.GAME_HEIGHT-250;
+
+
+
 
         // populate rectangles for raise, call, & fold buttons
         for (int i = 0; i < 3; i++) {
@@ -38,6 +59,7 @@ public class GameGUI {
         for (int i = 0; i <= 52; i++) {
             cardMap.put(i, new ImageIcon("images/cards/" + i + ".png").getImage());
         }
+
     }
 
 
@@ -75,13 +97,20 @@ public class GameGUI {
         g.drawString("Fold", (int) (GamePanel.GAME_WIDTH * 0.6), (int) (buttonY * 1.05));
         Card c = new Card(4,3);
         Card c2 = new Card(0, 2);
-        drawCards(g, 0, 15, GamePanel.GAME_HEIGHT - 105);
-        drawCards(g, c2.getCardID(), 95, GamePanel.GAME_HEIGHT - 105);
+        //your cards
+        drawCards(g, 0, 15, GamePanel.GAME_HEIGHT - 105, 72, 96);
+        drawCards(g, c2.getCardID(), 95, GamePanel.GAME_HEIGHT - 105, 72, 96);
+
+        drawCards(g, 0, cardLocations[0][0], cardLocations[0][1], 45, 60);
+        drawCards(g, c2.getCardID(), cardLocations[0][0]+50, cardLocations[0][1], 45, 60);
+
+        //This is the weird stuff now
+
     }
 
 
-public void drawCards(Graphics g, int cardNum, int x, int y) {
-    g.drawImage(cardMap.get(cardNum), x, y, 72, 96, null);
+public void drawCards(Graphics g, int cardNum, int x, int y, int w, int h) {
+    g.drawImage(cardMap.get(cardNum), x, y, w, h, null);
 
 }
 
