@@ -259,11 +259,6 @@ public class GameGUI implements Runnable  {
             return "Escape";
         }
         if(game.isActionOnYou) {
-            try {
-                Thread.sleep(500); // match last bot sleeping
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
             if(isRaising) {
                 slider.mousePressed(e);
             }
