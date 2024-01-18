@@ -18,6 +18,7 @@ public class Game implements Runnable {
     public boolean[] hasGone;
     public boolean[] isAllIn;
     public boolean isFlop, isTurn, isRiver;
+    public boolean isPreFlop;
     public boolean isActionOnYou = false;
 
     public int[] bets;
@@ -91,7 +92,7 @@ public class Game implements Runnable {
     }
 
     public void preflop() {
-
+        isPreFlop = true;
         dealHands();
         yourHand[0] = table[yourPos].getHand().get(0).cardID;
         yourHand[1] = table[yourPos].getHand().get(1).cardID;
@@ -146,7 +147,7 @@ public class Game implements Runnable {
     }
 
     public void turn() {
-
+        isPreFlop = false;
         bettingRound();
         if(checkNumPlayers()>1) {
             comm.addToHand(d.deal());
@@ -249,6 +250,11 @@ public class Game implements Runnable {
 
     public void processWin() {
         winners = getWinnerIdx(comm.getHand());
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("The winners are: " + winners);
         if(checkNumPlayers()>1) System.out.println(allHands[winners.get(0)].getStringStrength());
         for (int i = 0; i<NUM_PLAYERS; i++) {

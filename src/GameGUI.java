@@ -13,6 +13,10 @@ public class GameGUI implements Runnable  {
     private Rectangle escapeRect;
     public boolean paused = false;
 
+    Slider slider;
+
+    private boolean isRaising;
+
     private int numTicks;
     private GameAction action;
     private boolean hasDrawn;
@@ -24,8 +28,8 @@ public class GameGUI implements Runnable  {
 
 
     public GameGUI() {
-
-
+        slider = new Slider((int)(width*0.5-Slider.RANGE_WIDTH/2), height/2,(int)(width*0.5-Slider.RANGE_WIDTH/2));
+        isRaising = false;
         numTicks = 0;
         hasDrawn = false;
         // load images
@@ -117,17 +121,34 @@ public class GameGUI implements Runnable  {
             g.drawString("Your Turn!", (int)(width*0.4), (int)(height*0.7));
         }
 
+        //stacks and pots
         g.setFont(new Font("Garamond", Font.PLAIN, 18));
         g.drawString("Your Stack: " + game.table[game.yourPos].getStack(), 175, height - 70);
-        g.drawString("Pot: " + game.getPot(), (int)(width*0.4), (int)(height*0.3));
-
-        if (game.winners.size() > 0) {
-            g.setFont(new Font("Garamond", Font.PLAIN, 30));
-            g.drawString("Winner(s): ",  (int)(width*0.4), (int)(height*0.2));
-            for (int i = 0; i<game.winners.size(); i++) {
-                g.drawString(game.winners.get(i) + " ", (int)(width*0.6), (int)(height*0.2));
+        g.drawString("Your Bet: " + game.bets[game.yourPos], 175, height-90);
+        g.drawString("Pot: " + game.getPot(), (int)(width*0.47), (int)(height*0.35));
+        for(int i = 0; i<cardLocations.length; i++) {
+            g.drawString(i+1 + "'s Stack: " + game.table[i+1].getStack(), cardLocations[i][0], cardLocations[i][1]+75);
+            if(!game.isFold[i+1]) g.drawString(i+1 + "'s Bet: " + game.bets[i+1], cardLocations[i][0], cardLocations[i][1]+90);
+            else {
+                g.drawString("FOLD", cardLocations[i][0], cardLocations[i][1]+90);
             }
+        }
 
+        //winners
+        if (!game.winners.isEmpty()) {
+            g.setFont(new Font("Garamond", Font.PLAIN, 30));
+            g.setColor(Settings.golden);
+            g.fillRoundRect((int)(width*0.5-200), (int)(height*0.5-50),400, 100 , 75, 75);
+            g.setColor(Color.WHITE);
+            g.drawString("Winner(s): ",  (int)(width*0.42-game.winners.size()*25), (int)(height*0.5));
+            for (int i = 0; i<game.winners.size(); i++) {
+                g.drawString((i==0? "": ",") + game.winners.get(i), (int)(width*0.55+i*25), (int)(height*0.5));
+            }
+        }
+
+        //slider
+        if(isRaising) {
+            slider.draw(g);
         }
     }
 
@@ -149,18 +170,18 @@ public class GameGUI implements Runnable  {
         // draw flop once it comes
         if (game.isFlop) {
             for(int i=0;i<3;i++) {
-                g.drawImage(cardMap.get(game.comm.getHand().get(i).getCardID()), (int)(width*0.25)+75*i, (int)(height*0.4), 72, 96, null);
+                g.drawImage(cardMap.get(game.comm.getHand().get(i).getCardID()), (int)(width*0.28)+75*i, (int)(height*0.4), 72, 96, null);
             }
         }
 
         // draw turn once it comes
         if (game.isTurn) {
-            g.drawImage(cardMap.get(game.comm.getHand().get(3).getCardID()), (int)(width*0.25)+75*3, (int)(height*0.4), 72, 96, null);
+            g.drawImage(cardMap.get(game.comm.getHand().get(3).getCardID()), (int)(width*0.28)+75*3, (int)(height*0.4), 72, 96, null);
         }
 
         // draw river
         if (game.isRiver) {
-            g.drawImage(cardMap.get(game.comm.getHand().get(4).getCardID()), (int)(width*0.25)+75*4, (int)(height*0.4), 72, 96, null);
+            g.drawImage(cardMap.get(game.comm.getHand().get(4).getCardID()), (int)(width*0.28)+75*4, (int)(height*0.4), 72, 96, null);
         }
 
 
@@ -207,7 +228,14 @@ public class GameGUI implements Runnable  {
             // return the button pressed to game
             if (game.yourAction.equals("")) { // only accept button input once
                 if (buttonRects[0].contains(mouseX, mouseY)) {
-                    game.yourAction = "R";
+                    if(isRaising) {
+                        isRaising = false;
+                    }
+                    else {
+                        isRaising = true;
+
+                    }
+//                    game.yourAction = "R";
                 } else if (buttonRects[1].contains(mouseX, mouseY)) {
                     if(game.canCheck()) game.yourAction = "K";
                     else game.yourAction = "C";

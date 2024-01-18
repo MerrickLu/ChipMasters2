@@ -18,7 +18,7 @@ public class Bot {
     }
 
     public void makeMove(Game g) {
-        if (g.isFlop) {
+        if (g.isPreFlop) {
             preflop(g);
         } else {
             postFlop(g);

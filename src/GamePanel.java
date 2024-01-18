@@ -134,7 +134,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
             } else if (output.equals("Start Game")) {
                 onMenu = false;
                 onGame = true;
-                gameThread = new Thread(gameInstance = new Game(5,10,1000));
+                gameThread = new Thread(gameInstance = new Game(5,10,settings.getStartingCash()));
                 gameGUIThread = new Thread(game = new GameGUI());
                 gameThread.start();
                 gameGUIThread.start();
