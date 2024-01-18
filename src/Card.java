@@ -1,7 +1,7 @@
 public class Card implements Cloneable {
     // wsg
     public static final String CARDS = "A23456789TJQKA";
-    public static final String[] SUITS = { "Diamonds", "Clubs", "Hearts", "Spades" };
+    public static final String[] SUITS = { "Clubs", "Spades", "Hearts", "Diamonds" };
 
     public int cardID;
     private int cardNum; // number from 0-12
@@ -16,7 +16,10 @@ public class Card implements Cloneable {
     public Card(int num, int s) {
         cardNum = num;
         cardSuit = s;
+        cardID = cardSuit*13+cardNum+1;
     }
+
+    public int getCardID() { return cardID; }
 
     public int getCardNum() {
         return cardNum;

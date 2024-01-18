@@ -218,6 +218,7 @@ public class Game {
             hasGone[i] = false;
             isAllIn[i] = false;
             System.out.println(i + "'s stack is now " + table[i].getStack());
+            pot[i] = 0;
         }
         comm.clear();
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");

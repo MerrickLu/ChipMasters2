@@ -21,7 +21,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     public Menu menu = new Menu();
     public Settings settings = new Settings();
     public GameGUI game = new GameGUI();
-    private SoundPlayer background = new SoundPlayer("sounds/background.wav");
+//    private SoundPlayer background = new SoundPlayer("sounds/background.wav");
     public Thread gameThread;
     Image image;
     Graphics graphics;
@@ -37,8 +37,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         //add the MousePressed method from the MouseAdapter - by doing this we can listen for mouse input. We do this differently from the KeyListener because MouseAdapter has SEVEN mandatory methods - we only need one of them, and we don't want to make 6 empty methods
 
         this.setPreferredSize(new Dimension(GAME_WIDTH, GAME_HEIGHT));
-        background.setVolume(settings.getMusicVolume());
-        background.play();
+//        background.setVolume(settings.getMusicVolume());
+//        background.play();
         // make this class run at the same time as other classes
         gameThread = new Thread(this);
         gameThread.start();
@@ -148,7 +148,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         if (onSettings) {
             settings.mouseReleased(e);
 
-            background.setVolume(settings.getMusicVolume());
+//            background.setVolume(settings.getMusicVolume());
         }
     }
 

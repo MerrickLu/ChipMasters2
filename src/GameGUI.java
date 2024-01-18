@@ -35,7 +35,7 @@ public class GameGUI {
 
         // populate cardMap to match numbers from 1-52 with a unique card
         cardMap = new HashMap<Integer, Image>();
-        for (int i = 1; i <= 52; i++) {
+        for (int i = 0; i <= 52; i++) {
             cardMap.put(i, new ImageIcon("images/cards/" + i + ".png").getImage());
         }
     }
@@ -73,9 +73,10 @@ public class GameGUI {
         g.drawString("Raise", (int) (GamePanel.GAME_WIDTH * 0.355), (int) (buttonY * 1.05));
         g.drawString("Call", (int) (GamePanel.GAME_WIDTH * 0.48), (int) (buttonY * 1.05));
         g.drawString("Fold", (int) (GamePanel.GAME_WIDTH * 0.6), (int) (buttonY * 1.05));
-
-        drawCards(g, 1, 15, GamePanel.GAME_HEIGHT - 105);
-        drawCards(g, 2, 95, GamePanel.GAME_HEIGHT - 105);
+        Card c = new Card(4,3);
+        Card c2 = new Card(0, 2);
+        drawCards(g, 0, 15, GamePanel.GAME_HEIGHT - 105);
+        drawCards(g, c2.getCardID(), 95, GamePanel.GAME_HEIGHT - 105);
     }
 
 
