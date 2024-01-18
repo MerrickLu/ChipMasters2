@@ -216,8 +216,6 @@ public class Game implements Runnable {
         }
         switch (yourAction) {
             case "R":
-                System.out.println("How much would you like to raise? The minimum raise is " + minRaise);
-                raise(in.nextInt());
                 break;
             case "C":
                 call();
@@ -321,7 +319,7 @@ public class Game implements Runnable {
     }
 
     public void raise(int r) {
-        if (r >= table[currentPos].getStack()) {
+        if (r > table[currentPos].getStack()) {
             allIn();
             return;
         }

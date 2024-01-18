@@ -38,14 +38,21 @@ public class Bot {
                 x = temp;
             }
         }
-        if (x == 0) {// if x is an ace (hand is unsuited)
-            x = y;
+        if(x==0 && y==0) {
+            x = 13;
             y = 13;
         }
-        if (y == 0) {// if y is an ace (hand is suited)
-            y = x;
-            x = 13;
+        else {
+            if (x == 0) {// if x is an ace (hand is unsuited)
+                x = y;
+                y = 13;
+            }
+            if (y == 0) {// if y is an ace (hand is suited)
+                y = x;
+                x = 13;
+            }
         }
+
         x -= 1;// index conversion
         y -= 1;
 

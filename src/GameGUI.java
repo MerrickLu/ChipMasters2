@@ -28,7 +28,7 @@ public class GameGUI implements Runnable  {
 
 
     public GameGUI() {
-        slider = new Slider((int)(width*0.5-Slider.RANGE_WIDTH/2), height/2,(int)(width*0.5-Slider.RANGE_WIDTH/2));
+        slider = new Slider((int)(width*0.8-Slider.RANGE_WIDTH/2), height*9/10,(int)(width*0.8-Slider.RANGE_WIDTH/2));
         isRaising = false;
         numTicks = 0;
         hasDrawn = false;
@@ -225,27 +225,40 @@ public class GameGUI implements Runnable  {
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
+            if(isRaising) {
+                slider.mousePressed(e);
+            }
             // return the button pressed to game
             if (game.yourAction.equals("")) { // only accept button input once
                 if (buttonRects[0].contains(mouseX, mouseY)) {
                     if(isRaising) {
                         isRaising = false;
+                        game.yourAction = "R";
+                        game.raise(slider.getSliderNum());
                     }
                     else {
                         isRaising = true;
-
+                        slider.setRange(Math.min(game.minRaise, game.table[game.yourPos].getStack()), game.table[game.yourPos].getStack());
                     }
 //                    game.yourAction = "R";
                 } else if (buttonRects[1].contains(mouseX, mouseY)) {
+                    isRaising = false;
                     if(game.canCheck()) game.yourAction = "K";
                     else game.yourAction = "C";
                 } else if (buttonRects[2].contains(mouseX, mouseY)) {
+                    isRaising = false;
                     game.yourAction = "F";
                 }
             }
 
         }
         return "";
+    }
+
+    public void mouseDragged(MouseEvent e) {
+        if(isRaising) {
+            slider.mouseDragged(e);
+        }
     }
 
     // returns the cursor type

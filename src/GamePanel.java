@@ -119,7 +119,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     }
     @Override
     public void mouseDragged(MouseEvent e) {
-
+        if (onGame & game != null) {
+            game.mouseDragged(e);
+        }
     }
 
     @Override
