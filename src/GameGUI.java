@@ -136,13 +136,28 @@ public class GameGUI implements Runnable  {
 
         //winners
         if (!game.winners.isEmpty()) {
+            int xLocation, yLocation;
+            Image firstCard, secondCard;
             g.setFont(new Font("Garamond", Font.PLAIN, 30));
             g.setColor(Settings.golden);
             g.fillRoundRect((int)(width*0.5-200), (int)(height*0.5-50),400, 100 , 75, 75);
             g.setColor(Color.WHITE);
             g.drawString("Winner(s): ",  (int)(width*0.42-game.winners.size()*25), (int)(height*0.5));
             for (int i = 0; i<game.winners.size(); i++) {
-                g.drawString((i==0? "": ",") + game.winners.get(i), (int)(width*0.55+i*25), (int)(height*0.5));
+                g.drawString((i == 0 ? "" : ",") + game.winners.get(i), (int) (width * 0.55 + i * 25), (int) (height * 0.5));
+                /*if (!game.winnerHands.isEmpty() && !game.winnerHands.get(0).isEmpty()){
+                    xLocation = cardLocations[game.winners.get(i) - 1][0];
+                    yLocation = cardLocations[game.winners.get(i) - 1][1];
+                    System.out.println("GUI: " + game.winnerHands);
+                    System.out.println("GUI: " + game.winnerHands.get(i));
+                    System.out.println(xLocation + ", " + yLocation);
+
+                    firstCard = cardMap.get(game.winnerHands.get(i).get(0).getCardID());
+                    secondCard = cardMap.get(game.winnerHands.get(i).get(1).getCardID());
+                    System.out.println(firstCard + ", " + secondCard);
+                    g.drawImage(firstCard, xLocation, yLocation, 45, 60, null);
+                    g.drawImage(secondCard, xLocation + 50, yLocation, 45, 60, null);
+                }*/
             }
         }
 
@@ -183,10 +198,34 @@ public class GameGUI implements Runnable  {
         if (game.isRiver) {
             g.drawImage(cardMap.get(game.comm.getHand().get(4).getCardID()), (int)(width*0.28)+75*4, (int)(height*0.4), 72, 96, null);
         }
+    }
 
+    public void drawWinners(Graphics g) {
+        int xLocation, yLocation;
+        Image firstCard, secondCard;
+        g.setFont(new Font("Garamond", Font.PLAIN, 30));
+        g.setColor(Settings.golden);
+        g.fillRoundRect((int)(width*0.5-200), (int)(height*0.5-50),400, 100 , 75, 75);
+        g.setColor(Color.WHITE);
+        g.drawString("Winner(s): ",  (int)(width*0.42-game.winners.size()*25), (int)(height*0.5));
+        for (int i = 0; i<game.winners.size(); i++) {
+            g.drawString((i==0? "": ",") + game.winners.get(i), (int)(width*0.55+i*25), (int)(height*0.5));
+            xLocation = cardLocations[game.winners.get(i)-1][0];
+            yLocation = cardLocations[game.winners.get(i)-1][1];
+            System.out.println("GUI: " + game.winnerHands);
+            System.out.println("GUI: " + game.winnerHands.get(i));
+            System.out.println(xLocation + ", " + yLocation);
+
+            firstCard = cardMap.get(game.winnerHands.get(i).get(0).getCardID());
+            secondCard = cardMap.get(game.winnerHands.get(i).get(1).getCardID());
+            System.out.println(firstCard + ", " + secondCard);
+            g.drawImage(firstCard, xLocation, yLocation, 45, 60, null);
+            g.drawImage(secondCard, xLocation+50, yLocation, 45, 60, null);
+        }
 
 
     }
+
 
 
 

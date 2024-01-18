@@ -36,6 +36,7 @@ public class Game implements Runnable {
     public boolean running = true;
     public String yourAction = "";
     ArrayList<Integer> winners = new ArrayList<Integer>(); // for gui
+    ArrayList<ArrayList<Card>> winnerHands = new ArrayList<ArrayList<Card>>();
 
     public Game(int s, int b, int st) {
         actions = new ArrayDeque<GameAction>();
@@ -87,6 +88,7 @@ public class Game implements Runnable {
                 throw new RuntimeException(e);
             }
             winners.clear();
+            winnerHands.clear();
             sbPos = (sbPos+1)%NUM_PLAYERS;
         }
     }
@@ -254,6 +256,12 @@ public class Game implements Runnable {
             throw new RuntimeException(e);
         }
         System.out.println("The winners are: " + winners);
+        // store winner hands to arraylist
+        for (int i = 0; i<winners.size();i++) {
+            System.out.println(table[winners.get(i)].getHand());
+            winnerHands.add(table[winners.get(i)].getHand());
+            System.out.println(winnerHands);
+        }
         if(checkNumPlayers()>1) System.out.println(allHands[winners.get(0)].getStringStrength());
         for (int i = 0; i<NUM_PLAYERS; i++) {
             System.out.println(i + "'s hand was " + table[i].getHand());
