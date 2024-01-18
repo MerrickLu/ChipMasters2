@@ -1,8 +1,5 @@
 import java.sql.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Scanner;
+import java.util.*;
 
 public class Game {
 
@@ -29,10 +26,12 @@ public class Game {
     public TotalHand[] allHands;
     public Hand comm;
 
+    public Queue<GameAction> actions;
     Deck d;
     Bot bot = new Bot();
 
     public Game(int s, int b, int st) {
+        actions = new ArrayDeque<GameAction>();
         table = new Player[NUM_PLAYERS];
         isFold = new boolean[NUM_PLAYERS];
         hasGone = new boolean[NUM_PLAYERS];
@@ -60,15 +59,16 @@ public class Game {
     }
 
     public void startGame() {
-        System.out.println("Position: ");
-        yourPos = in.nextInt();
-        while(true) {
+//        System.out.println("Position: ");
+//        yourPos = in.nextInt();
+//        while(true) {
             d = new Deck();
             d.shuffle();
             preflop();
+            actions.add(new GameAction("W"));
             processWin();
             sbPos = (sbPos+1)%NUM_PLAYERS;
-        }
+//        }
     }
 
     public void preflop() {
@@ -84,10 +84,12 @@ public class Game {
 
         if(min != sb) {
             System.out.println(sbPos + " is all in ");
+            actions.add(new GameAction(idx, "A", 0));
             isAllIn[sbPos] = true;
         }
         else {
             System.out.println(sbPos + " bets " + Math.min(table[sbPos].getStack(), sb));
+            actions.add(new GameAction(idx, "R", Math.min(table[sbPos].getStack(), sb)));
         }
 
         idx = (idx+1)%NUM_PLAYERS;
@@ -98,10 +100,12 @@ public class Game {
         bets[idx] = min;
         if(min!=bb) {
             System.out.println(sbPos + " is all in ");
+            actions.add(new GameAction(idx, "A", 0));
             isAllIn[(sbPos+1)%NUM_PLAYERS] = true;
         }
         else {
             System.out.println((sbPos + 1) % NUM_PLAYERS + " bets " + bb);
+            actions.add(new GameAction(idx, "R", 0));
         }
         toCall = bb;
         minRaise = sb + bb;
@@ -113,6 +117,7 @@ public class Game {
             comm.addToHand(d.deal());
             comm.addToHand(d.deal());
             System.out.println("\nFlop comes " + comm);
+            actions.add(new GameAction("Flop"));
             turn();
         }
     }
@@ -123,6 +128,7 @@ public class Game {
         if(checkNumPlayers()>1) {
             comm.addToHand(d.deal());
             System.out.println("\nTurn comes " + comm);
+            actions.add(new GameAction("Turn"));
             river();
         }
     }
@@ -133,6 +139,7 @@ public class Game {
         if(checkNumPlayers()>1) {
             comm.addToHand(d.deal());
             System.out.println("\nRiver comes " + comm);
+            actions.add(new GameAction("River"));
             bettingRound();//last betting round
         }
     }
@@ -146,6 +153,7 @@ public class Game {
                 continue;
             }
             if (currentPos == yourPos) {
+                actions.add(new GameAction("You"));
                 actionOnYou();
             } else {
                 actionOnBot();
@@ -227,6 +235,7 @@ public class Game {
 
     public void check() {
         System.out.println(currentPos + " checks.");
+        actions.add(new GameAction(currentPos, "K", 0));
         nextPos();
     }
 
@@ -241,6 +250,7 @@ public class Game {
             return;
         }
         System.out.println(currentPos + " calls " + toCall);
+        actions.add(new GameAction(currentPos, "C", toCall));
         bets[currentPos] = toCall;
         nextPos();
     }
@@ -252,18 +262,20 @@ public class Game {
 
     public void fold() {
         System.out.println(currentPos + " folds.");
+        actions.add(new GameAction(currentPos, "F", 0));
         isFold[currentPos] = true;
         nextPos();
     }
 
     public void raise(int r) {
-        if (r > table[currentPos].getStack()) {
+        if (r >= table[currentPos].getStack()) {
             allIn();
             return;
         }
 
         if(r==table[currentPos].getStack()) {
             System.out.println(currentPos + " goes all in for " + getCurrentPlayer().getStack() + ".");
+            actions.add(new GameAction(currentPos, "A", 0));
             // figure out how much the new minraise is now;
             minRaise = Math.max(toCall + (r - toCall) * 2, minRaise);
             bets[currentPos] = r;
@@ -286,6 +298,7 @@ public class Game {
         bets[currentPos] = r;
         toCall = Math.max(toCall, r);
         System.out.println(currentPos + " raises to " + toCall);
+        actions.add(new GameAction(currentPos, "R", toCall));
         nextPos();
     }
 
@@ -402,6 +415,7 @@ public class Game {
     }
 
     public void collect() {
+        actions.add(new GameAction("Collect"));
         for (int i = 0; i < NUM_PLAYERS; i++) {
             pot[i] += bets[i];
             table[i].bet(bets[i]);
