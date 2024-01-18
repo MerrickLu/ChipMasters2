@@ -1,7 +1,7 @@
 import java.sql.Array;
 import java.util.*;
 
-public class Game {
+public class Game implements Runnable {
 
     public static final int NUM_PLAYERS = 6;
     public static Scanner in = new Scanner(System.in);
@@ -17,10 +17,12 @@ public class Game {
     public boolean[] isFold;
     public boolean[] hasGone;
     public boolean[] isAllIn;
-    public boolean isFlop;
+    public boolean isFlop, isTurn, isRiver;
+    public boolean isActionOnYou = false;
 
     public int[] bets;
     public int[] pot;
+    public int[] yourHand; // to be returned to GameGUI
 
     public Player[] table;
     public TotalHand[] allHands;
@@ -29,6 +31,10 @@ public class Game {
     public Queue<GameAction> actions;
     Deck d;
     Bot bot = new Bot();
+    public Thread gameThread;
+    public boolean running = true;
+    public String yourAction = "";
+    ArrayList<Integer> winners = new ArrayList<Integer>(); // for gui
 
     public Game(int s, int b, int st) {
         actions = new ArrayDeque<GameAction>();
@@ -41,6 +47,7 @@ public class Game {
         bb = b;
         bets = new int[NUM_PLAYERS];
         pot = new int[NUM_PLAYERS];
+        yourHand = new int[2];
         allHands = new TotalHand[NUM_PLAYERS];
 
         toCall = 0;
@@ -56,24 +63,38 @@ public class Game {
             hasGone[i] = false;
         }
         bot = new Bot();
+
+
     }
 
+
+    public void run() {
+        startGame();
+    }
     public void startGame() {
 //        System.out.println("Position: ");
 //        yourPos = in.nextInt();
-//        while(true) {
+        while(true) {
             d = new Deck();
             d.shuffle();
             preflop();
             actions.add(new GameAction("W"));
             processWin();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            winners.clear();
             sbPos = (sbPos+1)%NUM_PLAYERS;
-//        }
+        }
     }
 
     public void preflop() {
-        isFlop = true;
+
         dealHands();
+        yourHand[0] = table[yourPos].getHand().get(0).cardID;
+        yourHand[1] = table[yourPos].getHand().get(1).cardID;
         System.out.println("Your hand is: " + table[yourPos].getHand() + "\n");
         int idx = sbPos;
         while(table[idx].getStack() == 0) {
@@ -117,29 +138,33 @@ public class Game {
             comm.addToHand(d.deal());
             comm.addToHand(d.deal());
             System.out.println("\nFlop comes " + comm);
+            isFlop = true;
+            System.out.println("Done");
             actions.add(new GameAction("Flop"));
             turn();
         }
     }
 
     public void turn() {
-        isFlop = false;
+
         bettingRound();
         if(checkNumPlayers()>1) {
             comm.addToHand(d.deal());
             System.out.println("\nTurn comes " + comm);
             actions.add(new GameAction("Turn"));
+            isTurn = true;
             river();
         }
     }
 
     public void river() {
-        isFlop = false;
+
         bettingRound();
         if(checkNumPlayers()>1) {
             comm.addToHand(d.deal());
             System.out.println("\nRiver comes " + comm);
             actions.add(new GameAction("River"));
+            isRiver = true;
             bettingRound();//last betting round
         }
     }
@@ -154,9 +179,11 @@ public class Game {
             }
             if (currentPos == yourPos) {
                 actions.add(new GameAction("You"));
+                isActionOnYou = true;
                 actionOnYou();
             } else {
                 actionOnBot();
+                isActionOnYou = false;
             }
         }
 
@@ -177,8 +204,16 @@ public class Game {
 					[R] - Raise
 					[C] - Call
 					[F] - Fold""");
-        String str = in.next();
-        switch (str.toUpperCase()) {
+
+        while (true) {
+            // do nothing until user does something
+            System.out.print(yourAction); // DO NOT ERASE THIS LINE FOR SOME REASON IT BUGS OUT
+            if (!yourAction.equals("")) {
+                System.out.println("you chose " + yourAction);
+                break;
+            }
+        }
+        switch (yourAction) {
             case "R":
                 System.out.println("How much would you like to raise? The minimum raise is " + minRaise);
                 raise(in.nextInt());
@@ -189,6 +224,8 @@ public class Game {
             case "K":
                 if (canCheck()) {
                     check();
+                    yourAction = "";
+
                 } else
                     System.out.println("Can't do that");
                 return;
@@ -198,14 +235,20 @@ public class Game {
             default:
                 System.out.println("Not an option");
         }
+        yourAction = ""; // reset
     }
 
     public void actionOnBot() {
         bot.makeMove(this);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void processWin() {
-        ArrayList<Integer> winners = getWinnerIdx(comm.getHand());
+        winners = getWinnerIdx(comm.getHand());
         System.out.println("The winners are: " + winners);
         if(checkNumPlayers()>1) System.out.println(allHands[winners.get(0)].getStringStrength());
         for (int i = 0; i<NUM_PLAYERS; i++) {
@@ -228,6 +271,10 @@ public class Game {
             System.out.println(i + "'s stack is now " + table[i].getStack());
             pot[i] = 0;
         }
+        isFlop = false;
+        isTurn = false;
+        isRiver = false;
+        yourAction = "";
         comm.clear();
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 

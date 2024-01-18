@@ -14,17 +14,23 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     public static final int GAME_WIDTH = 867;
     public static final int GAME_HEIGHT = 500;
     public static final Rectangle PANEL_BOUNDS = new Rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT);
-    public boolean onMenu = true, onSettings = false, onGame = false;
+    public boolean onMenu = true, onSettings = false, onGame = false, onPaused = false;
+    public String beforeSettings = "";
 
     public final static String IMAGE_FOLDER_LOCATION = "images" + File.separator;
 
+    public static Game gameInstance;
     public Menu menu = new Menu();
     public Settings settings = new Settings();
-    public GameGUI game = new GameGUI();
-//    private SoundPlayer background = new SoundPlayer("sounds/background.wav");
+    public GameGUI game;
+    public Paused paused = new Paused();
+    //    private SoundPlayer background = new SoundPlayer("sounds/background.wav");
+    public Thread gamePanelThread;
     public Thread gameThread;
+    public Thread gameGUIThread;
     Image image;
     Graphics graphics;
+
 
 
 
@@ -35,13 +41,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         //add the MousePressed method from the MouseAdapter - by doing this we can listen for mouse input. We do this differently from the KeyListener because MouseAdapter has SEVEN mandatory methods - we only need one of them, and we don't want to make 6 empty methods
-
+        this.setLayout(null);
         this.setPreferredSize(new Dimension(GAME_WIDTH, GAME_HEIGHT));
+
+
 //        background.setVolume(settings.getMusicVolume());
 //        background.play();
         // make this class run at the same time as other classes
-        gameThread = new Thread(this);
-        gameThread.start();
+        gamePanelThread = new Thread(this);
+        gamePanelThread.start();
     }
 
     //paint is a method in java.awt library that we are overriding. It is a special method - it is called automatically in the background in order to update what appears in the window. You NEVER call paint() yourself
@@ -62,18 +70,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     public void draw(Graphics g) throws IOException, FontFormatException {
         if(onMenu) menu.draw(g);
         else if (onSettings) settings.draw(g);
-        else if (onGame) game.draw(g);
-    }
-
-    //call the move methods in other classes to update positions
-    //this method is constantly called from run(). By doing this, movements appear fluid and natural. If we take this out the movements appear sluggish and laggy
-    public void move (){
+        else if (onGame && game != null) {
+            game.draw(g);
+        }
+        else if (onPaused) paused.draw(g);
 
     }
 
     //handles all collision detection and responds accordingly
-    public void checkAction(){
-    }
+
 
     //run() method is what makes the game continue running without end. It calls other methods to move objects,  check for collision, and update the screen
     public void run(){
@@ -90,8 +95,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
             lastTime = now;
 
             //only move objects around and update screen if enough time has passed
-            if(delta >= 1){
-                move();
+            if(delta >= 1) {
                 repaint();
                 delta--;
             }
@@ -105,9 +109,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         } else if (onSettings) {
             settings.mouseMoved(e);
             setCursor(settings.getCursor());
-        } else if (onGame) {
+        } else if (onGame & game != null) {
             game.mouseMoved(e);
             setCursor(game.getCursor());
+        } else if (onPaused) {
+            paused.mouseMoved(e);
+            setCursor(paused.getCursor());
         }
     }
     @Override
@@ -123,19 +130,49 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
             if (output.equals("Settings")) {
                 onMenu = false;
                 onSettings = true;
+                beforeSettings = "Menu";
             } else if (output.equals("Start Game")) {
                 onMenu = false;
                 onGame = true;
+                gameThread = new Thread(gameInstance = new Game(5,10,1000));
+                gameGUIThread = new Thread(game = new GameGUI());
+                gameThread.start();
+                gameGUIThread.start();
+
             } else if (output.equals("Training Mode")) {
                 onMenu = false;
             }
         } else if (onSettings) {
-            if(settings.mousePressed(e).equals("Back")) {
-                onMenu = true;
+            output = settings.mousePressed(e);
+            if(output.equals("Back")) {
                 onSettings = false;
+                if (beforeSettings.equals("Menu")) {
+                    onMenu = true;
+                } else if(beforeSettings.equals("Paused")) {
+                    onPaused= true;
+                }
             }
         } else if (onGame) {
-            game.mousePressed(e);
+            output = game.mousePressed(e);
+            if(output.equals("Escape")) {
+                onGame = false;
+                onPaused = true;
+            }
+
+        } else if (onPaused) {
+            output = paused.mousePressed(e);
+            if(output.equals("X")) {
+                onPaused = false;
+                onGame = true;
+            } else if(output.equals("Menu")) {
+                onPaused = false;
+                onMenu = true;
+
+            } else if(output.equals("Settings")) {
+                onPaused = false;
+                onSettings = true;
+                beforeSettings = "Paused";
+            }
         }
     }
     @Override
