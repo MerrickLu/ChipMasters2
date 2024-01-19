@@ -29,17 +29,16 @@ public class Game implements Runnable {
     public TotalHand[] allHands;
     public Hand comm;
 
-    public Queue<GameAction> actions;
     Deck d;
     Bot bot = new Bot();
     public Thread gameThread;
     public boolean running = true;
+    public String[] actions = new String[NUM_PLAYERS];
     public String yourAction = "";
     ArrayList<Integer> winners = new ArrayList<Integer>(); // for gui
     ArrayList<ArrayList<Card>> winnerHands = new ArrayList<ArrayList<Card>>();
 
     public Game(int s, int b, int st) {
-        actions = new ArrayDeque<GameAction>();
         table = new Player[NUM_PLAYERS];
         isFold = new boolean[NUM_PLAYERS];
         hasGone = new boolean[NUM_PLAYERS];
@@ -65,8 +64,6 @@ public class Game implements Runnable {
             hasGone[i] = false;
         }
         bot = new Bot();
-
-
     }
 
 
@@ -80,7 +77,6 @@ public class Game implements Runnable {
             d = new Deck();
             d.shuffle();
             preflop();
-            actions.add(new GameAction("W"));
             processWin();
             try {
                 Thread.sleep(2000);
@@ -108,12 +104,10 @@ public class Game implements Runnable {
 
         if(min != sb) {
             System.out.println(sbPos + " is all in ");
-            actions.add(new GameAction(idx, "A", 0));
             isAllIn[sbPos] = true;
         }
         else {
             System.out.println(sbPos + " bets " + Math.min(table[sbPos].getStack(), sb));
-            actions.add(new GameAction(idx, "R", Math.min(table[sbPos].getStack(), sb)));
         }
 
         idx = (idx+1)%NUM_PLAYERS;
@@ -124,12 +118,10 @@ public class Game implements Runnable {
         bets[idx] = min;
         if(min!=bb) {
             System.out.println(sbPos + " is all in ");
-            actions.add(new GameAction(idx, "A", 0));
             isAllIn[(sbPos+1)%NUM_PLAYERS] = true;
         }
         else {
             System.out.println((sbPos + 1) % NUM_PLAYERS + " bets " + bb);
-            actions.add(new GameAction(idx, "R", 0));
         }
         toCall = bb;
         minRaise = sb + bb;
@@ -143,7 +135,6 @@ public class Game implements Runnable {
             System.out.println("\nFlop comes " + comm);
             isFlop = true;
             System.out.println("Done");
-            actions.add(new GameAction("Flop"));
             turn();
         }
     }
@@ -154,7 +145,6 @@ public class Game implements Runnable {
         if(checkNumPlayers()>1) {
             comm.addToHand(d.deal());
             System.out.println("\nTurn comes " + comm);
-            actions.add(new GameAction("Turn"));
             isTurn = true;
             river();
         }
@@ -166,7 +156,6 @@ public class Game implements Runnable {
         if(checkNumPlayers()>1) {
             comm.addToHand(d.deal());
             System.out.println("\nRiver comes " + comm);
-            actions.add(new GameAction("River"));
             isRiver = true;
             bettingRound();//last betting round
         }
@@ -181,7 +170,6 @@ public class Game implements Runnable {
                 continue;
             }
             if (currentPos == yourPos) {
-                actions.add(new GameAction("You"));
                 isActionOnYou = true;
                 actionOnYou();
             } else {
@@ -293,8 +281,8 @@ public class Game implements Runnable {
     }
 
     public void check() {
+        actions[currentPos] = "CHECK";
         System.out.println(currentPos + " checks.");
-        actions.add(new GameAction(currentPos, "K", 0));
         nextPos();
     }
 
@@ -308,8 +296,8 @@ public class Game implements Runnable {
             check();
             return;
         }
+        actions[currentPos] = "CALL";
         System.out.println(currentPos + " calls " + toCall);
-        actions.add(new GameAction(currentPos, "C", toCall));
         bets[currentPos] = toCall;
         nextPos();
     }
@@ -320,8 +308,8 @@ public class Game implements Runnable {
     }
 
     public void fold() {
+        actions[currentPos] = "FOLD";
         System.out.println(currentPos + " folds.");
-        actions.add(new GameAction(currentPos, "F", 0));
         isFold[currentPos] = true;
         nextPos();
     }
@@ -334,7 +322,6 @@ public class Game implements Runnable {
 
         if(r==table[currentPos].getStack()) {
             System.out.println(currentPos + " goes all in for " + getCurrentPlayer().getStack() + ".");
-            actions.add(new GameAction(currentPos, "A", 0));
             // figure out how much the new minraise is now;
             minRaise = Math.max(toCall + (r - toCall) * 2, minRaise);
             bets[currentPos] = r;
@@ -356,8 +343,8 @@ public class Game implements Runnable {
         minRaise = Math.max(toCall + (r - toCall) * 2, minRaise);
         bets[currentPos] = r;
         toCall = Math.max(toCall, r);
+        actions[currentPos] = "RAISE";
         System.out.println(currentPos + " raises to " + toCall);
-        actions.add(new GameAction(currentPos, "R", toCall));
         nextPos();
     }
 
@@ -474,7 +461,6 @@ public class Game implements Runnable {
     }
 
     public void collect() {
-        actions.add(new GameAction("Collect"));
         for (int i = 0; i < NUM_PLAYERS; i++) {
             pot[i] += bets[i];
             table[i].bet(bets[i]);

@@ -18,7 +18,6 @@ public class GameGUI implements Runnable  {
     private boolean isRaising;
 
     private int numTicks;
-    private GameAction action;
     private boolean hasDrawn;
 
     private int[][] cardLocations;
@@ -85,32 +84,6 @@ public class GameGUI implements Runnable  {
         g.fillRect(escapeRect.x, escapeRect.y, escapeRect.width, escapeRect.height);
         // draw options button
         g.drawImage(options, buttonHeight / 2, buttonHeight / 2, buttonHeight, buttonHeight, null);
-        //draw buttons, with hover-over effect
-        if (hoveredOption == 1)
-            g.drawImage(raise1, (int) (width * 0.33), buttonY, buttonWidth, buttonHeight, null);
-        else g.drawImage(raise, (int) (width * 0.33), buttonY, buttonWidth, buttonHeight, null);
-        if (hoveredOption == 2)
-            g.drawImage(call1, (int) (width * 0.45), buttonY, buttonWidth, buttonHeight, null);
-        else g.drawImage(call, (int) (width * 0.45), buttonY, buttonWidth, buttonHeight, null);
-        if (hoveredOption == 3)
-            g.drawImage(fold1, (int) (width * 0.57), buttonY, buttonWidth, buttonHeight, null);
-        else g.drawImage(fold, (int) (width * 0.57), buttonY, buttonWidth, buttonHeight, null);
-
-        // draw text over buttons
-        try {
-            g.setFont(Font.createFont(Font.TRUETYPE_FONT, Menu.fontFile).deriveFont(18f));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        g.setFont(new Font("Garamond", Font.BOLD, 18));
-        g.setColor(Color.white);
-        g.drawString("Raise", (int) (width * 0.355), (int) (buttonY * 1.05));
-        if(game.canCheck()) g.drawString("Check", (int) (width * 0.475), (int) (buttonY * 1.05));
-        else g.drawString("Call", (int) (width * 0.48), (int) (buttonY * 1.05));
-        g.drawString("Fold", (int) (width * 0.6), (int) (buttonY * 1.05));
-
-        // raise textfield
-
 
         drawCards(g);
         //your cards
@@ -119,6 +92,30 @@ public class GameGUI implements Runnable  {
         if(game.isActionOnYou) {
             g.setFont(new Font("Arial", Font.PLAIN, 40));
             g.drawString("Your Turn!", (int)(width*0.4), (int)(height*0.7));
+
+            //draw buttons, with hover-over effect
+            if (hoveredOption == 1)
+                g.drawImage(raise1, (int) (width * 0.33), buttonY, buttonWidth, buttonHeight, null);
+            else g.drawImage(raise, (int) (width * 0.33), buttonY, buttonWidth, buttonHeight, null);
+            if (hoveredOption == 2)
+                g.drawImage(call1, (int) (width * 0.45), buttonY, buttonWidth, buttonHeight, null);
+            else g.drawImage(call, (int) (width * 0.45), buttonY, buttonWidth, buttonHeight, null);
+            if (hoveredOption == 3)
+                g.drawImage(fold1, (int) (width * 0.57), buttonY, buttonWidth, buttonHeight, null);
+            else g.drawImage(fold, (int) (width * 0.57), buttonY, buttonWidth, buttonHeight, null);
+
+            // draw text over buttons
+            try {
+                g.setFont(Font.createFont(Font.TRUETYPE_FONT, Menu.fontFile).deriveFont(18f));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            g.setFont(new Font("Garamond", Font.BOLD, 18));
+            g.setColor(Color.white);
+            g.drawString("Raise", (int) (width * 0.355), (int) (buttonY * 1.05));
+            if(game.canCheck()) g.drawString("Check", (int) (width * 0.475), (int) (buttonY * 1.05));
+            else g.drawString("Call", (int) (width * 0.48), (int) (buttonY * 1.05));
+            g.drawString("Fold", (int) (width * 0.6), (int) (buttonY * 1.05));
         }
 
         //stacks and pots
@@ -131,6 +128,9 @@ public class GameGUI implements Runnable  {
             if(!game.isFold[i+1]) g.drawString(i+1 + "'s Bet: " + game.bets[i+1], cardLocations[i][0], cardLocations[i][1]+90);
             else {
                 g.drawString("FOLD", cardLocations[i][0], cardLocations[i][1]+90);
+            }
+            if (game.hasGone[i+1]) {
+                g.drawString(game.actions[i+1], cardLocations[i][0], cardLocations[i][1]+105);
             }
         }
 
