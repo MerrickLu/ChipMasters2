@@ -67,13 +67,12 @@ public class GameGUI implements Runnable  {
         for (int i = 0; i <= 52; i++) {
             cardMap.put(i, new ImageIcon("images/cards/" + i + ".png").getImage());
         }
-
-
     }
 
+    // included to make class implement runnable (to run simultaneously with Game)
     public void run() {
-
     }
+
     // draw components to screen
     public void draw(Graphics g) {
         int buttonY = (int)(height*0.95-width*0.1*0.4);
@@ -85,8 +84,28 @@ public class GameGUI implements Runnable  {
         // draw options button
         g.drawImage(options, buttonHeight / 2, buttonHeight / 2, buttonHeight, buttonHeight, null);
 
-        drawCards(g);
-        //your cards
+        // draw cards
+        g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
+        g.drawImage(cardMap.get(game.yourHand[1]), 90, height - 105, 72, 96, null);
+        // bot cards
+        for (int i = 0; i<5;i++) {
+            g.drawImage(cardMap.get(0),cardLocations[i][0], cardLocations[i][1], 45, 60, null);
+            g.drawImage(cardMap.get(0),cardLocations[i][0]+50, cardLocations[i][1], 45, 60, null);
+        }
+        // draw flop once it comes
+        if (game.isFlop) {
+            for(int i=0;i<3;i++) {
+                g.drawImage(cardMap.get(game.comm.getHand().get(i).getCardID()), (int)(width*0.28)+75*i, (int)(height*0.4), 72, 96, null);
+            }
+        }
+        // draw turn once it comes
+        if (game.isTurn) {
+            g.drawImage(cardMap.get(game.comm.getHand().get(3).getCardID()), (int)(width*0.28)+75*3, (int)(height*0.4), 72, 96, null);
+        }
+        // draw river
+        if (game.isRiver) {
+            g.drawImage(cardMap.get(game.comm.getHand().get(4).getCardID()), (int)(width*0.28)+75*4, (int)(height*0.4), 72, 96, null);
+        }
 
         //Your Turn
         if(game.isActionOnYou) {
@@ -119,45 +138,44 @@ public class GameGUI implements Runnable  {
         }
 
         //stacks and pots
+        // yours
+        g.setColor(Color.black);
+        drawCenteredString(g, "Pot: " + game.getPot(), GamePanel.PANEL_BOUNDS, (int)(height*0.35), new Font("Garamond", Font.PLAIN, 30));
+        g.setColor(Settings.golden);
         g.setFont(new Font("Garamond", Font.PLAIN, 18));
         g.drawString("Your Stack: " + game.table[game.yourPos].getStack(), 175, height - 70);
         g.drawString("Your Bet: " + game.bets[game.yourPos], 175, height-90);
-        g.drawString("Pot: " + game.getPot(), (int)(width*0.47), (int)(height*0.35));
+        // bots
         for(int i = 0; i<cardLocations.length; i++) {
             g.drawString(i+1 + "'s Stack: " + game.table[i+1].getStack(), cardLocations[i][0], cardLocations[i][1]+75);
-            if(!game.isFold[i+1]) g.drawString(i+1 + "'s Bet: " + game.bets[i+1], cardLocations[i][0], cardLocations[i][1]+90);
+
+            if(!game.isFold[i+1]) {
+                g.drawString(i+1 + "'s Bet: " + game.bets[i+1], cardLocations[i][0], cardLocations[i][1]+90);
+                if (game.hasGone[i+1]) { // display bot action (call, check, raise)
+                    g.drawString(game.actions[i+1], cardLocations[i][0], cardLocations[i][1]+105);
+                }
+            }
             else {
                 g.drawString("FOLD", cardLocations[i][0], cardLocations[i][1]+90);
             }
-            if (game.hasGone[i+1]) {
-                g.drawString(game.actions[i+1], cardLocations[i][0], cardLocations[i][1]+105);
-            }
         }
 
-        //winners
+        // display winners
         if (!game.winners.isEmpty()) {
-            int xLocation, yLocation;
-            Image firstCard, secondCard;
             g.setFont(new Font("Garamond", Font.PLAIN, 30));
             g.setColor(Settings.golden);
             g.fillRoundRect((int)(width*0.5-200), (int)(height*0.5-50),400, 100 , 75, 75);
             g.setColor(Color.WHITE);
             g.drawString("Winner(s): ",  (int)(width*0.42-game.winners.size()*25), (int)(height*0.5));
-            for (int i = 0; i<game.winners.size(); i++) {
-                g.drawString((i == 0 ? "" : ",") + game.winners.get(i), (int) (width * 0.55 + i * 25), (int) (height * 0.5));
-                /*if (!game.winnerHands.isEmpty() && !game.winnerHands.get(0).isEmpty()){
-                    xLocation = cardLocations[game.winners.get(i) - 1][0];
-                    yLocation = cardLocations[game.winners.get(i) - 1][1];
-                    System.out.println("GUI: " + game.winnerHands);
-                    System.out.println("GUI: " + game.winnerHands.get(i));
-                    System.out.println(xLocation + ", " + yLocation);
-
-                    firstCard = cardMap.get(game.winnerHands.get(i).get(0).getCardID());
-                    secondCard = cardMap.get(game.winnerHands.get(i).get(1).getCardID());
-                    System.out.println(firstCard + ", " + secondCard);
-                    g.drawImage(firstCard, xLocation, yLocation, 45, 60, null);
-                    g.drawImage(secondCard, xLocation + 50, yLocation, 45, 60, null);
-                }*/
+            for (int i = 0, winner, ID; i<game.winners.size(); i++) {
+                winner = game.winners.get(i);
+                g.drawString((i == 0 ? "" : ",") + winner, (int) (width * 0.55 + i * 25), (int) (height * 0.5));
+                if (winner != 0) { // display winning bot hands
+                    ID = game.table[winner].getHand().get(0).getCardID();
+                    g.drawImage(cardMap.get(ID), cardLocations[winner - 1][0], cardLocations[winner - 1][1], 45, 60, null);
+                    ID = game.table[winner].getHand().get(1).getCardID();
+                    g.drawImage(cardMap.get(ID), cardLocations[winner - 1][0] + 50, cardLocations[winner - 1][1], 45, 60, null);
+                }
             }
         }
 
@@ -167,66 +185,18 @@ public class GameGUI implements Runnable  {
         }
     }
 
-
-    /*public void drawCards(Graphics g, int cardNum, int x, int y, int w, int h) {
-        g.drawImage(cardMap.get(cardNum), x, y, w, h, null);
-    }*/
-    public void drawCards(Graphics g) {
-        // your cards
-        g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
-        g.drawImage(cardMap.get(game.yourHand[1]), 90, height - 105, 72, 96, null);
-
-        // bot cards
-        for (int i = 0; i<5;i++) {
-            g.drawImage(cardMap.get(0),cardLocations[i][0], cardLocations[i][1], 45, 60, null);
-            g.drawImage(cardMap.get(0),cardLocations[i][0]+50, cardLocations[i][1], 45, 60, null);
-        }
-
-        // draw flop once it comes
-        if (game.isFlop) {
-            for(int i=0;i<3;i++) {
-                g.drawImage(cardMap.get(game.comm.getHand().get(i).getCardID()), (int)(width*0.28)+75*i, (int)(height*0.4), 72, 96, null);
-            }
-        }
-
-        // draw turn once it comes
-        if (game.isTurn) {
-            g.drawImage(cardMap.get(game.comm.getHand().get(3).getCardID()), (int)(width*0.28)+75*3, (int)(height*0.4), 72, 96, null);
-        }
-
-        // draw river
-        if (game.isRiver) {
-            g.drawImage(cardMap.get(game.comm.getHand().get(4).getCardID()), (int)(width*0.28)+75*4, (int)(height*0.4), 72, 96, null);
-        }
-    }
-
-    public void drawWinners(Graphics g) {
-        int xLocation, yLocation;
-        Image firstCard, secondCard;
-        g.setFont(new Font("Garamond", Font.PLAIN, 30));
+    public void drawCenteredString(Graphics g, String text, Rectangle rect, int y, Font font) {
+        // Get the FontMetrics
+        FontMetrics metrics = g.getFontMetrics(font);
+        // Determine the X coordinate for the text
+        int x = rect.x + (rect.width - metrics.stringWidth(text)) / 2;
         g.setColor(Settings.golden);
-        g.fillRoundRect((int)(width*0.5-200), (int)(height*0.5-50),400, 100 , 75, 75);
-        g.setColor(Color.WHITE);
-        g.drawString("Winner(s): ",  (int)(width*0.42-game.winners.size()*25), (int)(height*0.5));
-        for (int i = 0; i<game.winners.size(); i++) {
-            g.drawString((i==0? "": ",") + game.winners.get(i), (int)(width*0.55+i*25), (int)(height*0.5));
-            xLocation = cardLocations[game.winners.get(i)-1][0];
-            yLocation = cardLocations[game.winners.get(i)-1][1];
-            System.out.println("GUI: " + game.winnerHands);
-            System.out.println("GUI: " + game.winnerHands.get(i));
-            System.out.println(xLocation + ", " + yLocation);
-
-            firstCard = cardMap.get(game.winnerHands.get(i).get(0).getCardID());
-            secondCard = cardMap.get(game.winnerHands.get(i).get(1).getCardID());
-            System.out.println(firstCard + ", " + secondCard);
-            g.drawImage(firstCard, xLocation, yLocation, 45, 60, null);
-            g.drawImage(secondCard, xLocation+50, yLocation, 45, 60, null);
-        }
-
-
+        g.fillRoundRect(x-20, y-font.getSize(), metrics.stringWidth(text)+40, font.getSize()+10, 30,20);
+        // Draw the String
+        g.setFont(font);
+        g.setColor(Color.black);
+        g.drawString(text, x, y);
     }
-
-
 
 
     // mouse moved, called from GamePanel

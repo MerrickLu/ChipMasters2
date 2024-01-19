@@ -17,25 +17,27 @@ public class Game implements Runnable {
     public boolean[] isFold;
     public boolean[] hasGone;
     public boolean[] isAllIn;
-    public boolean isFlop, isTurn, isRiver;
     public boolean isPreFlop;
-    public boolean isActionOnYou = false;
 
     public int[] bets;
     public int[] pot;
-    public int[] yourHand; // to be returned to GameGUI
 
     public Player[] table;
     public TotalHand[] allHands;
     public Hand comm;
-
     Deck d;
     Bot bot = new Bot();
+
+    // variables to be returned to GUI
     public Thread gameThread;
+    public boolean isFlop, isTurn, isRiver;
+    public boolean isActionOnYou = false;
     public boolean running = true;
+    public boolean onWinners = false;
+    public int[] yourHand;
     public String[] actions = new String[NUM_PLAYERS];
     public String yourAction = "";
-    ArrayList<Integer> winners = new ArrayList<Integer>(); // for gui
+    ArrayList<Integer> winners = new ArrayList<Integer>();
     ArrayList<ArrayList<Card>> winnerHands = new ArrayList<ArrayList<Card>>();
 
     public Game(int s, int b, int st) {
@@ -66,10 +68,11 @@ public class Game implements Runnable {
         bot = new Bot();
     }
 
-
+    // runs simultaneously with GameGUI
     public void run() {
         startGame();
     }
+
     public void startGame() {
 //        System.out.println("Position: ");
 //        yourPos = in.nextInt();
@@ -83,7 +86,7 @@ public class Game implements Runnable {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            winners.clear();
+            reset();
             winnerHands.clear();
             sbPos = (sbPos+1)%NUM_PLAYERS;
         }
@@ -258,6 +261,12 @@ public class Game implements Runnable {
             System.out.println(winners.get(i) + " wins " + getPot() / winners.size());
             table[winners.get(i)].addToStack(getPot() / winners.size());
         }
+
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+
+    }
+
+    private void reset() {
         for(int i = 0; i<NUM_PLAYERS; i++) {
             table[i].resetHand();
             if(table[i].getStack()==0) {
@@ -276,8 +285,7 @@ public class Game implements Runnable {
         isRiver = false;
         yourAction = "";
         comm.clear();
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-
+        winners.clear();
     }
 
     public void check() {
