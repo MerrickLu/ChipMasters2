@@ -267,8 +267,8 @@ public class GameGUI implements Runnable  {
                 if (buttonRects[0].contains(mouseX, mouseY)) {
                     if(isRaising) {
                         isRaising = false;
-                        game.yourAction = "R";
                         game.raise(slider.getSliderNum());
+                        game.yourAction = "R";
                     }
                     else {
                         isRaising = true;

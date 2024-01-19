@@ -14,6 +14,8 @@ public class Game implements Runnable {
     public int toCall;
     public int minRaise;
 
+
+
     public boolean[] isFold;
     public boolean[] hasGone;
     public boolean[] isAllIn;
@@ -77,13 +79,13 @@ public class Game implements Runnable {
 //        System.out.println("Position: ");
 //        yourPos = in.nextInt();
         while(true) {
+            allHands = new TotalHand[NUM_PLAYERS];
             d = new Deck();
             d.shuffle();
             preflop();
-            actions.add(new GameAction("W"));
             processWin();
             try {
-                Thread.sleep(2000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -142,8 +144,6 @@ public class Game implements Runnable {
             comm.addToHand(d.deal());
             System.out.println("\nFlop comes " + comm);
             isFlop = true;
-            System.out.println("Done");
-            actions.add(new GameAction("Flop"));
             turn();
         }
     }
@@ -161,12 +161,11 @@ public class Game implements Runnable {
     }
 
     public void river() {
-
+        isPreFlop = false;
         bettingRound();
         if(checkNumPlayers()>1) {
             comm.addToHand(d.deal());
             System.out.println("\nRiver comes " + comm);
-            actions.add(new GameAction("River"));
             isRiver = true;
             bettingRound();//last betting round
         }
@@ -181,17 +180,14 @@ public class Game implements Runnable {
                 continue;
             }
             if (currentPos == yourPos) {
-                actions.add(new GameAction("You"));
                 isActionOnYou = true;
                 actionOnYou();
             } else {
-                actionOnBot();
                 isActionOnYou = false;
+                actionOnBot();
             }
         }
-
         collect();
-
     }
 
     public void actionOnYou() {
@@ -208,7 +204,7 @@ public class Game implements Runnable {
 					[C] - Call
 					[F] - Fold""");
 
-        while (true) {
+            while (true) {
             // do nothing until user does something
             System.out.print(yourAction); // DO NOT ERASE THIS LINE FOR SOME REASON IT BUGS OUT
             if (!yourAction.equals("")) {
@@ -240,18 +236,28 @@ public class Game implements Runnable {
     }
 
     public void actionOnBot() {
-        bot.makeMove(this);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        bot.makeMove(this);
+
     }
 
     public void processWin() {
         winners = getWinnerIdx(comm.getHand());
+        System.out.println("Processing win");
+        System.out.println(winners);
+        if(allHands!=null) {
+            allHands[winners.get(0)].getBestHand();
+            System.out.println(allHands[winners.get(0)].getStringStrength());
+        }
+        else System.out.println("Won by folding");
         try {
             Thread.sleep(2000);
+            in.nextLine();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -327,13 +333,9 @@ public class Game implements Runnable {
     }
 
     public void raise(int r) {
-        if (r > table[currentPos].getStack()) {
-            allIn();
-            return;
-        }
-
         if(r==table[currentPos].getStack()) {
             System.out.println(currentPos + " goes all in for " + getCurrentPlayer().getStack() + ".");
+            isAllIn[currentPos] = true;
             actions.add(new GameAction(currentPos, "A", 0));
             // figure out how much the new minraise is now;
             minRaise = Math.max(toCall + (r - toCall) * 2, minRaise);
@@ -341,6 +343,7 @@ public class Game implements Runnable {
             toCall = Math.max(toCall, r);
             System.out.println("Bet to call is " + toCall);
             nextPos();
+            System.out.println(currentPos);
             return;
         }
 
@@ -362,6 +365,7 @@ public class Game implements Runnable {
     }
 
     public boolean canCont() {
+        if(checkNumPlayers()==1) return true;
         for (int i = 0; i < NUM_PLAYERS; i++) {
             // if folded or all in skip checking
             if (isFold[i] || isAllIn[i])
@@ -411,8 +415,7 @@ public class Game implements Runnable {
         }
         int notfold = 0;
         int maxStrength = 0;
-        while (notfold < NUM_PLAYERS && isFold[notfold])
-            notfold++;
+        while (notfold < NUM_PLAYERS && isFold[notfold]) notfold++;
         maxloc.add(notfold);
 
         for (int i = 0; i < NUM_PLAYERS; i++) {
@@ -420,12 +423,9 @@ public class Game implements Runnable {
             hand.addAll((Collection<? extends Card>) table[i].getHand().clone());
             allHands[i] = new TotalHand(hand);
         }
-        if (notfold == isFold.length - 1) {
-            return maxloc;
-        }
+
         for (int i = notfold + 1; i < NUM_PLAYERS; i++) {
-            if (isFold[i])
-                continue;
+            if (isFold[i]) continue;
             if (allHands[i].compareTo(allHands[maxloc.get(0)]) > 0) {
                 // stronger hand
                 maxloc.clear();
@@ -438,16 +438,6 @@ public class Game implements Runnable {
         return maxloc;
     }
 
-    public void displayWinnerHands() {
-        ArrayList<Integer> maxloc = getWinnerIdx(comm.getHand());
-        for (int c : maxloc) {
-            System.out.println(c + " has " + allHands[c].getStrength());
-            for (Card card : allHands[c].getBestHand()) {
-                System.out.print(card + ", ");
-            }
-            System.out.println();
-        }
-    }
 
     public void dealHands() {
         // deal each player 2 cards;

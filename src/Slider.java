@@ -10,6 +10,8 @@ import java.awt.event.*;
 public class Slider extends Rectangle {
 
     public Rectangle range;//range over which the knob can slide
+
+    public Rectangle errorMargin;
     public static final int KNOB_DIAMETER = 20;
     public static final int RANGE_WIDTH = 200;
 
@@ -22,6 +24,7 @@ public class Slider extends Rectangle {
     public Slider(int x, int y, int rangex){
         super(x, y, KNOB_DIAMETER, KNOB_DIAMETER);
         range = new Rectangle(rangex, y+KNOB_DIAMETER/5, RANGE_WIDTH, 10);
+        errorMargin = new Rectangle(rangex-15, y+KNOB_DIAMETER/5-15, RANGE_WIDTH+30, 40);
         sliderPercent = 0;
         low = 0;
         high = 0;
@@ -48,7 +51,7 @@ public class Slider extends Rectangle {
     //called from GamePanel whenever a mouse click is detected
     //changes the current location of the ball to be wherever the mouse is located on the screen
     public void mousePressed(MouseEvent e){
-        if(range.contains(e.getX(), e.getY())) {
+        if(errorMargin.contains(e.getX(), e.getY())) {
             x = keepInBounds(e.getX());
         }
     }
@@ -57,7 +60,7 @@ public class Slider extends Rectangle {
     }
 
     public void mouseDragged(MouseEvent e) {
-        if(range.contains(e.getX(), e.getY())) {
+        if(errorMargin.contains(e.getX(), e.getY())) {
             x = keepInBounds(e.getX());
         }
 
