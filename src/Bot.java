@@ -106,6 +106,10 @@ public class Bot {
         Arrays.sort(sorted);
 
         if (equity[g.currentPos] == sorted[sorted.length - 1]) {
+            if(g.minRaise > g.getCurrentPlayer().getStack()) {
+                g.allIn();
+                return;
+            }
             g.raise(g.minRaise);
             return;
         }
