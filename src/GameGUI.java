@@ -211,19 +211,16 @@ public class GameGUI implements Runnable  {
         switch (i) {
             case 1:
                 drawCenteredString(g, "Game Starting", GamePanel.PANEL_BOUNDS, (int) (height*0.5), Font.createFont(Font.TRUETYPE_FONT, Menu.fontFile).deriveFont(30f),true);
-                System.out.println("Game Starting");
                 break;
             case 2:
-                drawCenteredString(g, "Dealing", GamePanel.PANEL_BOUNDS, (int) (height*0.5), Font.createFont(Font.TRUETYPE_FONT, Menu.fontFile).deriveFont(30f),true);
-                System.out.println("Dealing");
+                drawCenteredString(g, "Shuffling", GamePanel.PANEL_BOUNDS, (int) (height*0.5), Font.createFont(Font.TRUETYPE_FONT, Menu.fontFile).deriveFont(30f),true);
                 break;
             case 3:
-                g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
-                g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
+                g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null); // your first card
                 break;
             case 4,5,6,7,8:
                 g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
-                for(int j = 0; j <= i-4; j++) {
+                for(int j = 0; j <= i-4; j++) { // bot cards
                     g.drawImage(cardMap.get(0), cardLocations[j][0], cardLocations[j][1], 45, 60, null);
                 }
                 break;
@@ -232,7 +229,7 @@ public class GameGUI implements Runnable  {
                 for(int j = 0; j < i-4; j++) {
                     g.drawImage(cardMap.get(0), cardLocations[j][0], cardLocations[j][1], 45, 60, null);
                 }
-                g.drawImage(cardMap.get(game.yourHand[1]), 75, height - 105, 72, 96, null);
+                g.drawImage(cardMap.get(game.yourHand[1]), 75, height - 105, 72, 96, null); // your second card
                 break;
             case 10,11,12,13,14:
                 g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
@@ -240,7 +237,7 @@ public class GameGUI implements Runnable  {
                 for(int j = 0; j <= 4; j++) {
                     g.drawImage(cardMap.get(0), cardLocations[j][0], cardLocations[j][1], 45, 60, null);
                 }
-                for(int j = 0; j <= i-10; j++) {
+                for(int j = 0; j <= i-10; j++) { // bot second cards
                     g.drawImage(cardMap.get(0), cardLocations[j][0]+50, cardLocations[j][1], 45, 60, null);
                 }
                 break;
