@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 
@@ -75,6 +76,7 @@ public class GameGUI implements Runnable  {
 
     // draw components to screen
     public void draw(Graphics g) {
+        String text; // to display winners properly
         int buttonY = (int)(height*0.95-width*0.1*0.4);
         int buttonWidth = (int)(width*0.1);
         int buttonHeight = (int)(buttonWidth*0.4);
@@ -140,7 +142,7 @@ public class GameGUI implements Runnable  {
         //stacks and pots
         // yours
         g.setColor(Color.black);
-        drawCenteredString(g, "Pot: " + game.getPot(), GamePanel.PANEL_BOUNDS, (int)(height*0.35), new Font("Garamond", Font.PLAIN, 30));
+        drawCenteredString(g, "Pot: " + game.getPot(), GamePanel.PANEL_BOUNDS, (int)(height*0.35), new Font("Garamond", Font.PLAIN, 30), true);
         g.setColor(Settings.golden);
         g.setFont(new Font("Garamond", Font.PLAIN, 18));
         g.drawString("Your Stack: " + game.table[game.yourPos].getStack(), 175, height - 70);
@@ -162,14 +164,11 @@ public class GameGUI implements Runnable  {
 
         // display winners
         if (!game.winners.isEmpty()) {
-            g.setFont(new Font("Garamond", Font.PLAIN, 30));
-            g.setColor(Settings.golden);
-            g.fillRoundRect((int)(width*0.5-200), (int)(height*0.5-50),400, 100 , 75, 75);
-            g.setColor(Color.WHITE);
-            g.drawString("Winner(s): ",  (int)(width*0.42-game.winners.size()*25), (int)(height*0.5));
+
+            text = "Winner" + (game.winners.size()>1 ? ": " : "s: ");
             for (int i = 0, winner, ID; i<game.winners.size(); i++) {
                 winner = game.winners.get(i);
-                g.drawString((i == 0 ? "" : ",") + winner, (int) (width * 0.55 + i * 25), (int) (height * 0.5));
+                text = text + (i == 0 ? "" : ",") + winner;
                 if (winner != 0) { // display winning bot hands
                     ID = game.table[winner].getHand().get(0).getCardID();
                     g.drawImage(cardMap.get(ID), cardLocations[winner - 1][0], cardLocations[winner - 1][1], 45, 60, null);
@@ -177,6 +176,13 @@ public class GameGUI implements Runnable  {
                     g.drawImage(cardMap.get(ID), cardLocations[winner - 1][0] + 50, cardLocations[winner - 1][1], 45, 60, null);
                 }
             }
+
+            g.setFont(new Font("Garamond", Font.PLAIN, 30));
+            g.setColor(Settings.golden);
+            g.fillRoundRect((int)(width*0.5-200), (int)(height*0.5-50),400, 100 , 75, 75);
+            g.setColor(Color.WHITE);
+            drawCenteredString(g, text, GamePanel.PANEL_BOUNDS, (int)(height*0.5), new Font("Garamond", Font.PLAIN, 30), false);
+            drawCenteredString(g, "Press any key to continue", GamePanel.PANEL_BOUNDS, (int)(height*0.5+33), new Font("Garamond", Font.PLAIN, 30), false);
         }
 
         //slider
@@ -185,16 +191,18 @@ public class GameGUI implements Runnable  {
         }
     }
 
-    public void drawCenteredString(Graphics g, String text, Rectangle rect, int y, Font font) {
+    public void drawCenteredString(Graphics g, String text, Rectangle rect, int y, Font font, boolean includeBG) {
         // Get the FontMetrics
         FontMetrics metrics = g.getFontMetrics(font);
         // Determine the X coordinate for the text
         int x = rect.x + (rect.width - metrics.stringWidth(text)) / 2;
-        g.setColor(Settings.golden);
-        g.fillRoundRect(x-20, y-font.getSize(), metrics.stringWidth(text)+40, font.getSize()+10, 30,20);
-        // Draw the String
+        if (includeBG) {
+            g.setColor(Settings.golden);
+            g.fillRoundRect(x - 20, y - font.getSize(), metrics.stringWidth(text) + 40, font.getSize() + 10, 30, 20);
+            // Draw the String
+            g.setColor(Color.black);
+        }
         g.setFont(font);
-        g.setColor(Color.black);
         g.drawString(text, x, y);
     }
 
@@ -265,9 +273,15 @@ public class GameGUI implements Runnable  {
         }
     }
 
+    public void keyPressed(KeyEvent e) {
+        if (game.onWinners) {
+            game.onWinners = false;
+        }
+    }
+
     // returns the cursor type
     public Cursor getCursor() {
-        if (hoveredOption != -1) {
+        if (hoveredOption != -1 && game.isActionOnYou) {
             return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR); // pointer
         } else {
             return Cursor.getDefaultCursor(); // normal cursor

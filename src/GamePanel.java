@@ -203,11 +203,25 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
     //if a key is pressed, we'll send it over to the PlayerBall class for processing
     public void keyPressed(KeyEvent e){
+        String returned;
         if (onMenu) {
-            if (menu.keyPressed(e).equals("Settings")) {
+            returned = menu.keyPressed(e);
+            if (returned.equals("Settings")) {
                 onMenu = false;
                 onSettings = true;
+                beforeSettings = "Menu";
+            } else if(returned.equals("Start Game")) {
+                onMenu = false;
+                onGame = true;
+                gameThread = new Thread(gameInstance = new Game(5,10,settings.getStartingCash()));
+                gameGUIThread = new Thread(game = new GameGUI());
+                gameThread.start();
+                gameGUIThread.start();
+            } else if(returned.equals("Training Mode")) {
+
             }
+        } else if (onGame) {
+            game.keyPressed(e);
         }
     }
 
