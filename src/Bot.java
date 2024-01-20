@@ -155,6 +155,7 @@ public class Bot {
         for (int i = 0; i < equities.length; i++) {
             equities[i] = (int) equities[i] / 100.0;
         }
+        g.allHands = new TotalHand[Game.NUM_PLAYERS];
         return equities;
 
     }

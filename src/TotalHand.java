@@ -10,7 +10,7 @@ public class TotalHand {
     // the index
 
     public enum HandStrength {
-        HIGH_CARD, PAIR, TWO_PAIR, TRIPS, STRAIGHT, FLUSH, FULL_HOUSE, QUADS, STRAIGHT_FLUSH, ROYAL_FLUSH
+        NOTHING, HIGH_CARD, PAIR, TWO_PAIR, TRIPS, STRAIGHT, FLUSH, FULL_HOUSE, QUADS, STRAIGHT_FLUSH, ROYAL_FLUSH
     }
 
     private HandStrength strength;
@@ -94,6 +94,7 @@ public class TotalHand {
         if (flush.get(0).getCardNum() == 0)
             return null;
         else {
+            Collections.reverse(flush);
             strength = HandStrength.FLUSH;
             return flush;
         }
@@ -158,15 +159,16 @@ public class TotalHand {
         while (spotsLeft > 0) {
             maxLoc = 0;
             for (int i = 0; i < nums.size(); i++) {
-                if (!invalidIdx.contains(i)) {
+                if (!invalidIdx.contains(i) && !nums.get(i).isEmpty()) {
                     maxLoc = i;
                     break;
                 }
             }
-            for (int i = 0; i < nums.size(); i++) {
+            for (int i = maxLoc+1; i < nums.size(); i++) {
                 if (!invalidIdx.contains(i) // checking if i is valid
                         && nums.get(i).size() >= nums.get(maxLoc).size() // checking if freq is bigger
                         && nums.get(i).size() <= spotsLeft // checking if hand can fit
+                        && !nums.get(i).isEmpty()
                 ) {
                     maxLoc = i;
                 }
@@ -175,8 +177,16 @@ public class TotalHand {
             spotsLeft -= nums.get(maxLoc).size();
             str += nums.get(maxLoc).size();
             // if it was aces, invalidate high ace and low ace
-            if (maxLoc == nums.size() - 1)
+            if (maxLoc == nums.size() - 1) {
                 invalidIdx.add(0);
+            }
+            if (maxLoc == 0) {
+                invalidIdx.add(nums.size()-1);
+            }
+            if(invalidIdx.contains(maxLoc)) {
+                strength = HandStrength.NOTHING;
+                return null;
+            }
             invalidIdx.add(maxLoc);
         }
 
@@ -223,11 +233,12 @@ public class TotalHand {
     }
 
     public HandStrength getStrength() {
+        getBestHand();
         return strength;
     }
 
     public String getStringStrength() {
-        switch (strength) {
+        switch (getStrength()) {
             case ROYAL_FLUSH:
                 return "Royal Flush";
             case STRAIGHT_FLUSH:
@@ -242,9 +253,12 @@ public class TotalHand {
                 return "Two Pair";
             case PAIR:
                 return "Pair";
-            default:
+            case HIGH_CARD:
                 return "High Card";
+            case NOTHING:
+                return "Nothing";
         }
+        return "Something went wrong";
     }
 
     public String toString() {

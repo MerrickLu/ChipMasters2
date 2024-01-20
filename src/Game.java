@@ -146,7 +146,6 @@ public class Game implements Runnable {
             comm.addToHand(d.deal());
             System.out.println("\nFlop comes " + comm);
             isFlop = true;
-            System.out.println("Done");
             turn();
         }
     }
@@ -212,7 +211,7 @@ public class Game implements Runnable {
             // do nothing until user does something
             System.out.print(yourAction); // DO NOT ERASE THIS LINE FOR SOME REASON IT BUGS OUT
             if (!yourAction.equals("")) {
-                System.out.println("you chose " + yourAction);
+//                System.out.println("you chose " + yourAction);
                 break;
             }
         }
@@ -250,6 +249,7 @@ public class Game implements Runnable {
 
     public void processWin() {
         winners = getWinnerIdx(comm.getHand());
+        displayAllHandStrengths();
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -258,11 +258,11 @@ public class Game implements Runnable {
         System.out.println("The winners are: " + winners);
         // store winner hands to arraylist
         for (int i = 0; i<winners.size();i++) {
-            System.out.println(table[winners.get(i)].getHand());
+//            System.out.println(table[winners.get(i)].getHand());
             winnerHands.add(table[winners.get(i)].getHand());
             System.out.println(winnerHands);
         }
-        if(checkNumPlayers()>1) System.out.println(allHands[winners.get(0)].getStringStrength());
+//        if(checkNumPlayers()>1) System.out.println(allHands[winners.get(0)].getStringStrength());
         for (int i = 0; i<NUM_PLAYERS; i++) {
             System.out.println(i + "'s hand was " + table[i].getHand());
         }
@@ -401,30 +401,25 @@ public class Game implements Runnable {
         return table[currentPos];
     }
 
+    public void updateAllHand(ArrayList<Card> community) {
+        for (int i = 0; i < NUM_PLAYERS; i++) {
+            ArrayList<Card> hand = (ArrayList<Card>) community.clone();
+            hand.addAll((Collection<? extends Card>) table[i].getHand().clone());
+            allHands[i] = new TotalHand(hand);
+        }
+    }
+
     public ArrayList<Integer> getWinnerIdx(ArrayList<Card> community) {
         ArrayList<Integer> maxloc = new ArrayList<>();// locations of the winners
-        if(checkNumPlayers()==1) {
-            for(int i = 0; i<NUM_PLAYERS; i++) {
-                if(!isFold[i]){
-                    maxloc.add(i);
-                    return maxloc;
-                }
-            }
-        }
+        updateAllHand(community);
+
         int notfold = 0;
         int maxStrength = 0;
         while (notfold < NUM_PLAYERS && isFold[notfold])
             notfold++;
         maxloc.add(notfold);
 
-        for (int i = 0; i < NUM_PLAYERS; i++) {
-            ArrayList<Card> hand = (ArrayList<Card>) community.clone();
-            hand.addAll((Collection<? extends Card>) table[i].getHand().clone());
-            allHands[i] = new TotalHand(hand);
-        }
-        if (notfold == isFold.length - 1) {
-            return maxloc;
-        }
+
         for (int i = notfold + 1; i < NUM_PLAYERS; i++) {
             if (isFold[i])
                 continue;
@@ -440,15 +435,19 @@ public class Game implements Runnable {
         return maxloc;
     }
 
-    public void displayWinnerHands() {
-        ArrayList<Integer> maxloc = getWinnerIdx(comm.getHand());
-        for (int c : maxloc) {
-            System.out.println(c + " has " + allHands[c].getStrength());
-            for (Card card : allHands[c].getBestHand()) {
-                System.out.print(card + ", ");
+    public void displayAllHandStrengths() {
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" +
+                "\nHAND STRENGHTS: ");
+        for (int c = 0; c<allHands.length; c++) {
+            System.out.println(c + " has " + allHands[c].getStringStrength());
+            if(allHands[c].getBestHand() != null) {
+                for (int i = 0; i < allHands[c].getBestHand().size(); i++) {
+                    System.out.print(allHands[c].getBestHand().get(i) + ", ");
+                }
+                System.out.println();
             }
-            System.out.println();
         }
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     }
 
     public void dealHands() {
