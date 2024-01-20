@@ -91,6 +91,12 @@ public class GameGUI implements Runnable  {
             g.drawImage(cardMap.get(game.yourHand[1]), 90, height - 105, 72, 96, null);
             // bot cards
             for (int i = 0; i < 5; i++) {
+                if(i+1==game.currentPos) {
+                    g.setColor(Menu.crimson);
+                    g.fillRoundRect(cardLocations[i][0]-5, cardLocations[i][1]-5, 105, 65, 10, 10);
+                }
+                g.setColor(Color.white);
+
                 g.drawImage(cardMap.get(0), cardLocations[i][0], cardLocations[i][1], 45, 60, null);
                 g.drawImage(cardMap.get(0), cardLocations[i][0] + 50, cardLocations[i][1], 45, 60, null);
             }
@@ -151,6 +157,7 @@ public class GameGUI implements Runnable  {
             for (int i = 0; i < cardLocations.length; i++) {
                 g.drawString(i + 1 + "'s Stack: " + game.table[i + 1].getStack(), cardLocations[i][0], cardLocations[i][1] + 75);
 
+
                 if (!game.isFold[i + 1]) {
                     g.drawString(i + 1 + "'s Bet: " + game.bets[i + 1], cardLocations[i][0], cardLocations[i][1] + 90);
                     if (game.hasGone[i + 1]) { // display bot action (call, check, raise)
@@ -163,10 +170,10 @@ public class GameGUI implements Runnable  {
                     g.drawString("FOLD", cardLocations[i][0], cardLocations[i][1] + 90);
                 }
             }
-            if (game.isPreFlop) {
+//            if (game.isPreFlop) {
                 g.drawString("Small Blind", (game.sbPos == 0? 175 : cardLocations[game.sbPos-1][0]), (game.sbPos == 0? height - 50 : cardLocations[game.sbPos-1][1] + 120));
                 g.drawString("Big Blind", (game.sbPos == 5 ? 175 : cardLocations[game.sbPos][0]), (game.sbPos == 5? height-50 : cardLocations[game.sbPos][1] + 120));
-            }
+//            }
 
             // display winners
             if (!game.winners.isEmpty()) {
