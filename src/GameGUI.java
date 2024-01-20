@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.*;
@@ -9,29 +10,23 @@ public class GameGUI implements Runnable  {
     private final Image TABLE;
     private final Image raise, raise1, call, call1, fold, fold1, options;
     private static HashMap<Integer, Image> cardMap;
+    private int width = GamePanel.GAME_WIDTH, height = GamePanel.GAME_HEIGHT;
     private int hoveredOption = -1;
     private Rectangle buttonRects[] = new Rectangle[3];
     private Rectangle escapeRect;
     public boolean paused = false;
 
     Slider slider;
-
     private boolean isRaising;
-
-    private int numTicks;
-    private boolean hasDrawn;
-
     private int[][] cardLocations;
     private Game game = GamePanel.gameInstance;
-    private int width = GamePanel.GAME_WIDTH, height = GamePanel.GAME_HEIGHT;
 
 
 
     public GameGUI() {
         slider = new Slider((int)(width*0.8-Slider.RANGE_WIDTH/2), height*9/10,(int)(width*0.8-Slider.RANGE_WIDTH/2));
         isRaising = false;
-        numTicks = 0;
-        hasDrawn = false;
+
         // load images
         TABLE = new ImageIcon("images/pokerTable.jpg").getImage();
         raise = new ImageIcon("images/buttons/raise.png").getImage();
@@ -75,8 +70,135 @@ public class GameGUI implements Runnable  {
     }
 
     // draw components to screen
-    public void draw(Graphics g) {
+    public void draw(Graphics g) throws IOException, FontFormatException {
         String text; // to display winners properly
+        int buttonY = (int) (height * 0.95 - width * 0.1 * 0.4);
+        int buttonWidth = (int) (width * 0.1);
+        int buttonHeight = (int) (buttonWidth * 0.4);
+        g.drawImage(TABLE, 0, 0, width, height, null); // draw background to fit dimensions of panel
+
+        if (game.startSequence) {
+            startingSequence(g, game.sequenceNum);
+            if (game.sequenceNum == 14) game.startSequence = false;
+        } else {
+            // draw options button
+            g.setColor(Color.white);
+            g.fillRect(escapeRect.x, escapeRect.y, escapeRect.width, escapeRect.height);
+            g.drawImage(options, buttonHeight / 2, buttonHeight / 2, buttonHeight, buttonHeight, null);
+            // draw cards
+            // your cards
+            g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
+            g.drawImage(cardMap.get(game.yourHand[1]), 90, height - 105, 72, 96, null);
+            // bot cards
+            for (int i = 0; i < 5; i++) {
+                g.drawImage(cardMap.get(0), cardLocations[i][0], cardLocations[i][1], 45, 60, null);
+                g.drawImage(cardMap.get(0), cardLocations[i][0] + 50, cardLocations[i][1], 45, 60, null);
+            }
+            // draw flop once it comes
+            if (game.isFlop) {
+                for (int i = 0; i < 3; i++) {
+                    g.drawImage(cardMap.get(game.comm.getHand().get(i).getCardID()), (int) (width * 0.28) + 75 * i, (int) (height * 0.4), 72, 96, null);
+                }
+            }
+            // draw turn once it comes
+            if (game.isTurn) {
+                g.drawImage(cardMap.get(game.comm.getHand().get(3).getCardID()), (int) (width * 0.28) + 75 * 3, (int) (height * 0.4), 72, 96, null);
+            }
+            // draw river
+            if (game.isRiver) {
+                g.drawImage(cardMap.get(game.comm.getHand().get(4).getCardID()), (int) (width * 0.28) + 75 * 4, (int) (height * 0.4), 72, 96, null);
+            }
+
+            //Your Turn
+            if (game.isActionOnYou) {
+                g.setFont(new Font("Arial", Font.PLAIN, 40));
+                g.drawString("Your Turn!", (int) (width * 0.4), (int) (height * 0.7));
+
+                //draw buttons, with hover-over effect
+                if (hoveredOption == 1)
+                    g.drawImage(raise1, (int) (width * 0.33), buttonY, buttonWidth, buttonHeight, null);
+                else g.drawImage(raise, (int) (width * 0.33), buttonY, buttonWidth, buttonHeight, null);
+                if (hoveredOption == 2)
+                    g.drawImage(call1, (int) (width * 0.45), buttonY, buttonWidth, buttonHeight, null);
+                else g.drawImage(call, (int) (width * 0.45), buttonY, buttonWidth, buttonHeight, null);
+                if (hoveredOption == 3)
+                    g.drawImage(fold1, (int) (width * 0.57), buttonY, buttonWidth, buttonHeight, null);
+                else g.drawImage(fold, (int) (width * 0.57), buttonY, buttonWidth, buttonHeight, null);
+
+                // draw text over buttons
+                try {
+                    g.setFont(Font.createFont(Font.TRUETYPE_FONT, Menu.fontFile).deriveFont(18f));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                g.setFont(new Font("Garamond", Font.BOLD, 18));
+                g.setColor(Color.white);
+                g.drawString("Raise", (int) (width * 0.355), (int) (buttonY * 1.05));
+                if (game.canCheck()) g.drawString("Check", (int) (width * 0.475), (int) (buttonY * 1.05));
+                else g.drawString("Call", (int) (width * 0.48), (int) (buttonY * 1.05));
+                g.drawString("Fold", (int) (width * 0.6), (int) (buttonY * 1.05));
+            }
+
+            //stacks and pots
+            // yours
+            g.setColor(Color.black);
+            drawCenteredString(g, "Pot " + game.getPot(), GamePanel.PANEL_BOUNDS, (int) (height * 0.35), new Font("Garamond", Font.PLAIN, 30), true);
+            g.setColor(Settings.golden);
+            g.setFont(new Font("Garamond", Font.PLAIN, 18));
+            g.drawString("Your Stack: " + game.table[game.yourPos].getStack(), 175, height - 70);
+            g.drawString("Your Bet: " + game.bets[game.yourPos], 175, height - 90);
+            // bots
+            for (int i = 0; i < cardLocations.length; i++) {
+                g.drawString(i + 1 + "'s Stack: " + game.table[i + 1].getStack(), cardLocations[i][0], cardLocations[i][1] + 75);
+
+                if (!game.isFold[i + 1]) {
+                    g.drawString(i + 1 + "'s Bet: " + game.bets[i + 1], cardLocations[i][0], cardLocations[i][1] + 90);
+                    if (game.hasGone[i + 1]) { // display bot action (call, check, raise)
+                        g.drawString(game.actions[i + 1], cardLocations[i][0], cardLocations[i][1] + 105);
+                    }
+                    else {
+
+                    }
+                } else {
+                    g.drawString("FOLD", cardLocations[i][0], cardLocations[i][1] + 90);
+                }
+            }
+            if (game.isPreFlop) {
+                g.drawString("Small Blind", (game.sbPos == 0? 175 : cardLocations[game.sbPos-1][0]), (game.sbPos == 0? height - 50 : cardLocations[game.sbPos-1][1] + 120));
+                g.drawString("Big Blind", (game.sbPos == 5 ? 175 : cardLocations[game.sbPos][0]), (game.sbPos == 5? height-50 : cardLocations[game.sbPos][1] + 120));
+            }
+
+            // display winners
+            if (!game.winners.isEmpty()) {
+
+                text = "Winner" + (game.winners.size() > 1 ? ": " : "s: ");
+                for (int i = 0, winner, ID; i < game.winners.size(); i++) {
+                    winner = game.winners.get(i);
+                    text = text + (i == 0 ? "" : ",") + winner;
+                    if (winner != 0) { // display winning bot hands
+                        ID = game.table[winner].getHand().get(0).getCardID();
+                        g.drawImage(cardMap.get(ID), cardLocations[winner - 1][0], cardLocations[winner - 1][1], 45, 60, null);
+                        ID = game.table[winner].getHand().get(1).getCardID();
+                        g.drawImage(cardMap.get(ID), cardLocations[winner - 1][0] + 50, cardLocations[winner - 1][1], 45, 60, null);
+                    }
+                }
+                g.setFont(new Font("Garamond", Font.PLAIN, 30));
+                g.setColor(Settings.golden);
+                g.fillRoundRect((int) (width * 0.5 - 200), (int) (height * 0.5 + 50), 400, 80, 75, 75);
+                g.setColor(Color.WHITE);
+                drawCenteredString(g, text, GamePanel.PANEL_BOUNDS, (int) (height * 0.5)+80, new Font("Garamond", Font.PLAIN, 30), false);
+                drawCenteredString(g, "Press any key to continue", GamePanel.PANEL_BOUNDS, (int) (height * 0.5 + 113), new Font("Garamond", Font.PLAIN, 30), false);
+            }
+
+            //slider
+            if (isRaising) {
+                slider.draw(g);
+            }
+        }
+    }
+
+
+    public void startingSequence(Graphics g, int i) throws IOException, FontFormatException {
         int buttonY = (int)(height*0.95-width*0.1*0.4);
         int buttonWidth = (int)(width*0.1);
         int buttonHeight = (int)(buttonWidth*0.4);
@@ -86,112 +208,48 @@ public class GameGUI implements Runnable  {
         // draw options button
         g.drawImage(options, buttonHeight / 2, buttonHeight / 2, buttonHeight, buttonHeight, null);
 
-        // draw cards
-        g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
-        g.drawImage(cardMap.get(game.yourHand[1]), 90, height - 105, 72, 96, null);
-        // bot cards
-        for (int i = 0; i<5;i++) {
-            g.drawImage(cardMap.get(0),cardLocations[i][0], cardLocations[i][1], 45, 60, null);
-            g.drawImage(cardMap.get(0),cardLocations[i][0]+50, cardLocations[i][1], 45, 60, null);
-        }
-        // draw flop once it comes
-        if (game.isFlop) {
-            for(int i=0;i<3;i++) {
-                g.drawImage(cardMap.get(game.comm.getHand().get(i).getCardID()), (int)(width*0.28)+75*i, (int)(height*0.4), 72, 96, null);
-            }
-        }
-        // draw turn once it comes
-        if (game.isTurn) {
-            g.drawImage(cardMap.get(game.comm.getHand().get(3).getCardID()), (int)(width*0.28)+75*3, (int)(height*0.4), 72, 96, null);
-        }
-        // draw river
-        if (game.isRiver) {
-            g.drawImage(cardMap.get(game.comm.getHand().get(4).getCardID()), (int)(width*0.28)+75*4, (int)(height*0.4), 72, 96, null);
-        }
-
-        //Your Turn
-        if(game.isActionOnYou) {
-            g.setFont(new Font("Arial", Font.PLAIN, 40));
-            g.drawString("Your Turn!", (int)(width*0.4), (int)(height*0.7));
-
-            //draw buttons, with hover-over effect
-            if (hoveredOption == 1)
-                g.drawImage(raise1, (int) (width * 0.33), buttonY, buttonWidth, buttonHeight, null);
-            else g.drawImage(raise, (int) (width * 0.33), buttonY, buttonWidth, buttonHeight, null);
-            if (hoveredOption == 2)
-                g.drawImage(call1, (int) (width * 0.45), buttonY, buttonWidth, buttonHeight, null);
-            else g.drawImage(call, (int) (width * 0.45), buttonY, buttonWidth, buttonHeight, null);
-            if (hoveredOption == 3)
-                g.drawImage(fold1, (int) (width * 0.57), buttonY, buttonWidth, buttonHeight, null);
-            else g.drawImage(fold, (int) (width * 0.57), buttonY, buttonWidth, buttonHeight, null);
-
-            // draw text over buttons
-            try {
-                g.setFont(Font.createFont(Font.TRUETYPE_FONT, Menu.fontFile).deriveFont(18f));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            g.setFont(new Font("Garamond", Font.BOLD, 18));
-            g.setColor(Color.white);
-            g.drawString("Raise", (int) (width * 0.355), (int) (buttonY * 1.05));
-            if(game.canCheck()) g.drawString("Check", (int) (width * 0.475), (int) (buttonY * 1.05));
-            else g.drawString("Call", (int) (width * 0.48), (int) (buttonY * 1.05));
-            g.drawString("Fold", (int) (width * 0.6), (int) (buttonY * 1.05));
-        }
-
-        //stacks and pots
-        // yours
-        g.setColor(Color.black);
-        drawCenteredString(g, "Pot: " + game.getPot(), GamePanel.PANEL_BOUNDS, (int)(height*0.35), new Font("Garamond", Font.PLAIN, 30), true);
-        g.setColor(Settings.golden);
-        g.setFont(new Font("Garamond", Font.PLAIN, 18));
-        g.drawString("Your Stack: " + game.table[game.yourPos].getStack(), 175, height - 70);
-        g.drawString("Your Bet: " + game.bets[game.yourPos], 175, height-90);
-        // bots
-        for(int i = 0; i<cardLocations.length; i++) {
-            g.drawString(i+1 + "'s Stack: " + game.table[i+1].getStack(), cardLocations[i][0], cardLocations[i][1]+75);
-
-            if(!game.isFold[i+1]) {
-                g.drawString(i+1 + "'s Bet: " + game.bets[i+1], cardLocations[i][0], cardLocations[i][1]+90);
-                if (game.hasGone[i+1]) { // display bot action (call, check, raise)
-                    g.drawString(game.actions[i+1], cardLocations[i][0], cardLocations[i][1]+105);
+        switch (i) {
+            case 1:
+                drawCenteredString(g, "Game Starting", GamePanel.PANEL_BOUNDS, (int) (height*0.5), Font.createFont(Font.TRUETYPE_FONT, Menu.fontFile).deriveFont(30f),true);
+                System.out.println("Game Starting");
+                break;
+            case 2:
+                drawCenteredString(g, "Dealing", GamePanel.PANEL_BOUNDS, (int) (height*0.5), Font.createFont(Font.TRUETYPE_FONT, Menu.fontFile).deriveFont(30f),true);
+                System.out.println("Dealing");
+                break;
+            case 3:
+                g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
+                g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
+                break;
+            case 4,5,6,7,8:
+                g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
+                for(int j = 0; j <= i-4; j++) {
+                    g.drawImage(cardMap.get(0), cardLocations[j][0], cardLocations[j][1], 45, 60, null);
                 }
-            }
-            else {
-                g.drawString("FOLD", cardLocations[i][0], cardLocations[i][1]+90);
-            }
-        }
-
-        // display winners
-        if (!game.winners.isEmpty()) {
-
-            text = "Winner" + (game.winners.size()>1 ? ": " : "s: ");
-            for (int i = 0, winner, ID; i<game.winners.size(); i++) {
-                winner = game.winners.get(i);
-                text = text + (i == 0 ? "" : ",") + winner;
-                if (winner != 0) { // display winning bot hands
-                    ID = game.table[winner].getHand().get(0).getCardID();
-                    g.drawImage(cardMap.get(ID), cardLocations[winner - 1][0], cardLocations[winner - 1][1], 45, 60, null);
-                    ID = game.table[winner].getHand().get(1).getCardID();
-                    g.drawImage(cardMap.get(ID), cardLocations[winner - 1][0] + 50, cardLocations[winner - 1][1], 45, 60, null);
+                break;
+            case 9:
+                g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
+                for(int j = 0; j < i-4; j++) {
+                    g.drawImage(cardMap.get(0), cardLocations[j][0], cardLocations[j][1], 45, 60, null);
                 }
-            }
-
-            g.setFont(new Font("Garamond", Font.PLAIN, 30));
-            g.setColor(Settings.golden);
-            g.fillRoundRect((int)(width*0.5-200), (int)(height*0.5-50),400, 100 , 75, 75);
-            g.setColor(Color.WHITE);
-            drawCenteredString(g, text, GamePanel.PANEL_BOUNDS, (int)(height*0.5), new Font("Garamond", Font.PLAIN, 30), false);
-            drawCenteredString(g, "Press any key to continue", GamePanel.PANEL_BOUNDS, (int)(height*0.5+33), new Font("Garamond", Font.PLAIN, 30), false);
-        }
-
-        //slider
-        if(isRaising) {
-            slider.draw(g);
+                g.drawImage(cardMap.get(game.yourHand[1]), 75, height - 105, 72, 96, null);
+                break;
+            case 10,11,12,13,14:
+                g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
+                g.drawImage(cardMap.get(game.yourHand[1]), 75, height - 105, 72, 96, null);
+                for(int j = 0; j <= 4; j++) {
+                    g.drawImage(cardMap.get(0), cardLocations[j][0], cardLocations[j][1], 45, 60, null);
+                }
+                for(int j = 0; j <= i-10; j++) {
+                    g.drawImage(cardMap.get(0), cardLocations[j][0]+50, cardLocations[j][1], 45, 60, null);
+                }
+                break;
+            default:
+                break;
         }
     }
 
-    public void drawCenteredString(Graphics g, String text, Rectangle rect, int y, Font font, boolean includeBG) {
+    private void drawCenteredString(Graphics g, String text, Rectangle rect, int y, Font font, boolean includeBG) {
         // Get the FontMetrics
         FontMetrics metrics = g.getFontMetrics(font);
         // Determine the X coordinate for the text
@@ -206,6 +264,13 @@ public class GameGUI implements Runnable  {
         g.drawString(text, x, y);
     }
 
+    private void sleep(int m) {
+        try {
+            Thread.sleep(m);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     // mouse moved, called from GamePanel
     public void mouseMoved(MouseEvent e) {
@@ -233,7 +298,7 @@ public class GameGUI implements Runnable  {
     public String mousePressed(MouseEvent e) {
         int mouseX = e.getX();
         int mouseY = e.getY();
-        if (escapeRect.contains(mouseX, mouseY)) {
+        if (!game.startSequence && escapeRect.contains(mouseX, mouseY)) {
             return "Escape";
         }
         if(game.isActionOnYou) {

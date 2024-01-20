@@ -140,7 +140,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                 gameGUIThread = new Thread(game = new GameGUI());
                 gameThread.start();
                 gameGUIThread.start();
-
             } else if (output.equals("Training Mode")) {
                 onMenu = false;
             }

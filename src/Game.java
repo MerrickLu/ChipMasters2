@@ -34,6 +34,8 @@ public class Game implements Runnable {
     public boolean isActionOnYou = false;
     public boolean running = true;
     public boolean onWinners = false;
+    public boolean startSequence;
+    public int sequenceNum;
     public int[] yourHand;
     public String[] actions = new String[NUM_PLAYERS];
     public String yourAction = "";
@@ -79,10 +81,21 @@ public class Game implements Runnable {
         while(true) {
             d = new Deck();
             d.shuffle();
+            dealHands();
+            startSequence = true;
+            sequenceNum = 0;
+            while(startSequence) { // wait for GUI dealing sequence to finish
+                sequenceNum++;
+                try {
+                    Thread.sleep((sequenceNum > 2) ? 500 : 300);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             preflop();
             processWin();
             onWinners = true;
-            while(onWinners) {
+            while(onWinners) { // wait for user key press
                 System.out.print("");
             }
             reset();
@@ -92,12 +105,9 @@ public class Game implements Runnable {
     }
 
     public void preflop() {
-        isPreFlop = true;
-        dealHands();
-        yourHand[0] = table[yourPos].getHand().get(0).cardID;
-        yourHand[1] = table[yourPos].getHand().get(1).cardID;
-        System.out.println("Your hand is: " + table[yourPos].getHand() + "\n");
         int idx = sbPos;
+        isPreFlop = true;
+        System.out.println("Your hand is: " + table[yourPos].getHand() + "\n");
         while(table[idx].getStack() == 0) {
             idx=(idx+1)%NUM_PLAYERS;
         }
@@ -328,6 +338,7 @@ public class Game implements Runnable {
         }
 
         if(r==table[currentPos].getStack()) {
+            actions[currentPos] = "ALL IN";
             System.out.println(currentPos + " goes all in for " + getCurrentPlayer().getStack() + ".");
             // figure out how much the new minraise is now;
             minRaise = Math.max(toCall + (r - toCall) * 2, minRaise);
@@ -342,9 +353,6 @@ public class Game implements Runnable {
             System.out.println("raise higher");
             return;
         }
-
-
-
 
         // figure out how much the new minraise is now;
         minRaise = Math.max(toCall + (r - toCall) * 2, minRaise);
@@ -448,6 +456,9 @@ public class Game implements Runnable {
         for (int i = 0; i < 2 * NUM_PLAYERS; i++) {
             table[i % NUM_PLAYERS].addToHand(d.deal());
         }
+        // feedback to GUI
+        yourHand[0] = table[yourPos].getHand().get(0).cardID;
+        yourHand[1] = table[yourPos].getHand().get(1).cardID;
     }
 
     public String toString() {

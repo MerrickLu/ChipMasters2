@@ -75,7 +75,7 @@ public class Settings {
         g.setColor(golden); // draw title
         drawCenteredString(g, "Settings", GamePanel.PANEL_BOUNDS, (int) (GamePanel.GAME_HEIGHT * 0.15), Font.createFont(Font.TRUETYPE_FONT, Menu.fontFile).deriveFont(TITLE_SIZE));
 
-        g.setFont(new Font("Courier", Font.PLAIN, TEXT_SIZE));
+        g.setFont(new Font("Garamond", Font.PLAIN, TEXT_SIZE));
         // draw options
         for (int i = 0; i < options.length; i++) {
             // write the option

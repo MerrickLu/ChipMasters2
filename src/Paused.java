@@ -21,23 +21,23 @@ public class Paused {
         g.drawImage(BG_IMAGE, 0, 0, width, height, null);
 
         g.setColor(Color.white);
-        drawCenteredString(g, "Paused", optionRects[1], (int)(height*0.2), new Font("Arial", Font.PLAIN, (int)(TEXT_SIZE*2)));
+        drawCenteredString(g, "Paused", optionRects[1], (int)(height*0.2), new Font("Garamond", Font.PLAIN, (int)(TEXT_SIZE*2)));
 
         if(hoveredOption == 0) g.setColor(Color.red);
         else g.setColor(Color.white);
-        drawCenteredString(g, "X", optionRects[0], (int)(height*0.13), new Font("Arial", Font.PLAIN, TEXT_SIZE));
+        drawCenteredString(g, "X", optionRects[0], (int)(height*0.13), new Font("Garamond", Font.PLAIN, TEXT_SIZE));
         g.drawRect(optionRects[0].x,optionRects[0].y,optionRects[0].width,optionRects[0].height);
 
         if(hoveredOption == 1) g.setColor(Color.red);
         else g.setColor(Color.white);
-        drawCenteredString(g, "Exit to Main Menu", optionRects[1], (int)(height*0.53), new Font("Arial", Font.PLAIN, TEXT_SIZE));
+        drawCenteredString(g, "Exit to Main Menu", optionRects[1], (int)(height*0.53), new Font("Garamond", Font.PLAIN, TEXT_SIZE));
 
         if(hoveredOption == 2) g.setColor(Color.red);
         else g.setColor(Color.white);
-        drawCenteredString(g, "Settings", optionRects[1], (int)(height*0.73), new Font("Arial", Font.PLAIN, TEXT_SIZE));
+        drawCenteredString(g, "Settings", optionRects[1], (int)(height*0.73), new Font("Garamond", Font.PLAIN, TEXT_SIZE));
     }
 
-    public void drawCenteredString(Graphics g, String text, Rectangle rect, int y, Font font) {
+    private void drawCenteredString(Graphics g, String text, Rectangle rect, int y, Font font) {
         // Get the FontMetrics
         FontMetrics metrics = g.getFontMetrics(font);
         // Determine the X coordinate for the text

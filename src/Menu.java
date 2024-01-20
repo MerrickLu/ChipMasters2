@@ -41,13 +41,6 @@ public class Menu {
         drawCenteredString(g, "Chip Masters", GamePanel.PANEL_BOUNDS, (int) (GamePanel.GAME_HEIGHT*0.32), Font.createFont(Font.TRUETYPE_FONT, fontFile).deriveFont(TITLE_SIZE));
         g.setColor(Color.white);
 
-        /*for (int i = 0; i < optionRects.length; i++) {
-            if (optionRects[i].contains(MouseInfo.getPointerInfo().getLocation().getX(), MouseInfo.getPointerInfo().getLocation().getY())) {
-                // The mouse is over this option
-                selectedOption = i+3;
-            }
-        }*/
-
         // print each option
         for (double i = 0, yCoord = 0.47; i < options.length; i++, yCoord+=0.13) {
             text = options[(int)i];
@@ -123,7 +116,7 @@ public class Menu {
      * @param y The y location to draw the string in.
      * @param font The font of the string
      */
-    public void drawCenteredString(Graphics g, String text, Rectangle rect, int y, Font font) {
+    private void drawCenteredString(Graphics g, String text, Rectangle rect, int y, Font font) {
         // Get the FontMetrics
         FontMetrics metrics = g.getFontMetrics(font);
         // Determine the X coordinate for the text
