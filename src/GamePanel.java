@@ -37,11 +37,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 
     public GamePanel(){
-        try {
-            training = new Training(this);
-        } catch(Exception e) {
 
-        }
 
         this.setFocusable(true); //make everything in this class appear on the screen
         this.addKeyListener(this); //start listening for keyboard input
@@ -152,6 +148,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                 gameGUIThread.start();
             } else if (output.equals("Training Mode")) {
                 onMenu = false;
+                try {
+                    training = new Training(this);
+                } catch(Exception d) {
+
+                }
                 onTraining = true;
 
             }

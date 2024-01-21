@@ -9,7 +9,13 @@ import java.util.HashSet;
 
 public class Training {
 
+
     GamePanel clone;
+
+
+    private final int TEXT_SIZE = GamePanel.GAME_HEIGHT / 15;
+    private final float TITLE_SIZE = GamePanel.GAME_HEIGHT / 8; // font size scaled to panel size
+
 
     public static DecimalFormat percent = new DecimalFormat("#.00");
     private final Image TABLE;
@@ -41,8 +47,11 @@ public class Training {
 
     EquityCalculator calculator;
 
+    Rectangle backRect;
+
 
     public Training(GamePanel gamePanel) throws CloneNotSupportedException {
+        backRect = new Rectangle (0, 0, 120, (int)(TEXT_SIZE*1.5)); // rectangle for back button
         clone = gamePanel;
         equity = new double[6];
         choice = new int[]{0,0};
@@ -95,6 +104,7 @@ public class Training {
             comm[i] = new Rectangle(200+i*(cardWidth+10), 25, cardWidth+4, cardHeight+4);
             commCard[i] = new Card();
         }
+
     }
 
     public void draw(Graphics g) throws IOException, FontFormatException, CloneNotSupportedException {
@@ -111,6 +121,9 @@ public class Training {
         drawComm(g);
         drawHands(g);
         drawEquities(g);
+        g.setFont(Font.createFont(Font.TRUETYPE_FONT, Menu.fontFile).deriveFont(TITLE_SIZE/2));
+        g.drawString("Back", (int) (GamePanel.GAME_WIDTH * 0.02), (int) (GamePanel.GAME_HEIGHT * 0.07)); // draw back option
+
     }
 
     public void drawCardOptions(Graphics g) {
@@ -166,6 +179,12 @@ public class Training {
     public void mouseClicked(MouseEvent e) throws CloneNotSupportedException {
         int mouseX = e.getX();
         int mouseY = e.getY();
+
+        if(backRect.contains(mouseX, mouseY)) {
+            clone.onMenu = true;
+            clone.onTraining = false;
+            t1.interrupt();
+        }
 
         for (int i = 0; i < cardOptions.length; i++) {
             for(int j = 0; j<cardOptions[0].length; j++) {

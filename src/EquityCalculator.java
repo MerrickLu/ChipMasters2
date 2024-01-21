@@ -5,14 +5,16 @@ class EquityCalculator implements Runnable{
     public double[] equity;
     GamePanel clone;
     public void run(){
-            System.out.println("thread is running...");
-            while(true) {
+        while(true) {
+
                 try {
                     equity = getEquities(clone.training);
                 } catch (CloneNotSupportedException e) {
                     throw new RuntimeException(e);
                 }
-            }
+
+        }
+
 
     }
     
