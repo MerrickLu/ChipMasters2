@@ -14,7 +14,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     public static final int GAME_WIDTH = 867;
     public static final int GAME_HEIGHT = 500;
     public static final Rectangle PANEL_BOUNDS = new Rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT);
-    public boolean onMenu = true, onSettings = false, onGame = false, onPaused = false;
+    public boolean onMenu = true, onSettings = false, onGame = false, onPaused = false, onTraining = false;
     public String beforeSettings = "";
 
     public final static String IMAGE_FOLDER_LOCATION = "images" + File.separator;
@@ -22,6 +22,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     public static Game gameInstance;
     public Menu menu = new Menu();
     public Settings settings = new Settings();
+
+    public Training training;
     public GameGUI game;
     public Paused paused = new Paused();
     //    private SoundPlayer background = new SoundPlayer("sounds/background.wav");
@@ -35,6 +37,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 
     public GamePanel(){
+        try {
+            training = new Training(this);
+        } catch(Exception e) {
+
+        }
 
         this.setFocusable(true); //make everything in this class appear on the screen
         this.addKeyListener(this); //start listening for keyboard input
@@ -67,11 +74,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     }
 
     //call the draw methods in each class to update positions as things move
-    public void draw(Graphics g) throws IOException, FontFormatException {
+    public void draw(Graphics g) throws IOException, FontFormatException, CloneNotSupportedException {
         if(onMenu) menu.draw(g);
         else if (onSettings) settings.draw(g);
         else if (onGame && game != null) {
             game.draw(g);
+        }
+        else if(onTraining) {
+            training.draw(g);
         }
         else if (onPaused) paused.draw(g);
 
@@ -142,6 +152,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                 gameGUIThread.start();
             } else if (output.equals("Training Mode")) {
                 onMenu = false;
+                onTraining = true;
+
             }
         } else if (onSettings) {
             output = settings.mousePressed(e);
@@ -174,10 +186,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                 onSettings = true;
                 beforeSettings = "Paused";
             }
+        }else if(onTraining) {
+            try {
+                training.mouseClicked(e);
+            } catch (CloneNotSupportedException ex) {
+                throw new RuntimeException(ex);
+            }
         }
+
     }
     @Override
     public void mouseClicked(MouseEvent e) {
+
 
     }
 

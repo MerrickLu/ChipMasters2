@@ -19,7 +19,22 @@ public class Card implements Cloneable {
         cardID = cardSuit*13+cardNum+1;
     }
 
-    public int getCardID() { return cardID; }
+    public Card() {
+        cardID = 0;
+    }
+
+    public static Card IDtoNum(int ID) {
+        int num = (ID-1)%13;
+        int cardSuit = (ID-1)/13;
+        return (new Card(num, cardSuit));
+    }
+
+    public int getCardID() {
+
+        return cardID;
+    }
+
+
 
     public int getCardNum() {
         return cardNum;
