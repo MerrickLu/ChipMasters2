@@ -26,7 +26,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     public Training training;
     public GameGUI game;
     public Paused paused = new Paused();
-    //    private SoundPlayer background = new SoundPlayer("sounds/background.wav");
+    private SoundPlayer background = new SoundPlayer("sounds/background.wav");
     public Thread gamePanelThread;
     public Thread gameThread;
     public Thread gameGUIThread;
@@ -47,9 +47,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         this.setLayout(null);
         this.setPreferredSize(new Dimension(GAME_WIDTH, GAME_HEIGHT));
 
-
-//        background.setVolume(settings.getMusicVolume());
-//        background.play();
+        // play background
+        background.setVolume(Settings.getMusicVolume());
+        background.play();
+        background.loop();
         // make this class run at the same time as other classes
         gamePanelThread = new Thread(this);
         gamePanelThread.start();
@@ -121,6 +122,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         } else if (onPaused) {
             paused.mouseMoved(e);
             setCursor(paused.getCursor());
+        } else if (onTraining) {
+            training.mouseMoved(e);
         }
     }
     @Override
@@ -142,16 +145,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
             } else if (output.equals("Start Game")) {
                 onMenu = false;
                 onGame = true;
-                gameThread = new Thread(gameInstance = new Game(5,10,settings.getStartingCash()));
+                gameThread = new Thread(gameInstance = new Game(5,10,Settings.getStartingCash()));
                 gameGUIThread = new Thread(game = new GameGUI());
                 gameThread.start();
                 gameGUIThread.start();
-            } else if (output.equals("Training Mode")) {
+            } else if (output.equals("Odds Calculator")) {
                 onMenu = false;
                 try {
                     training = new Training(this);
                 } catch(Exception d) {
-
+                    d.printStackTrace();
                 }
                 onTraining = true;
 
@@ -165,6 +168,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                 } else if(beforeSettings.equals("Paused")) {
                     onPaused= true;
                 }
+
             }
         } else if (onGame) {
             output = game.mousePressed(e);
@@ -198,8 +202,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     }
     @Override
     public void mouseClicked(MouseEvent e) {
-
-
     }
 
     @Override
@@ -207,7 +209,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         if (onSettings) {
             settings.mouseReleased(e);
 
-//            background.setVolume(settings.getMusicVolume());
+            background.setVolume(settings.getMusicVolume());
         }
     }
 
@@ -233,12 +235,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
             } else if(returned.equals("Start Game")) {
                 onMenu = false;
                 onGame = true;
-                gameThread = new Thread(gameInstance = new Game(5,10,settings.getStartingCash()));
+                gameThread = new Thread(gameInstance = new Game(5,10,Settings.getStartingCash()));
                 gameGUIThread = new Thread(game = new GameGUI());
                 gameThread.start();
                 gameGUIThread.start();
-            } else if(returned.equals("Training Mode")) {
-
+            } else if(returned.equals("Odds Calculator")) {
+                onMenu = false;
+                try {
+                    training = new Training(this);
+                } catch(Exception d) {
+                    d.printStackTrace();
+                }
+                onTraining = true;
             }
         } else if (onGame) {
             game.keyPressed(e);

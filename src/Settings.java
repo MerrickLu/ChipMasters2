@@ -54,15 +54,15 @@ public class Settings {
 
         backRect = new Rectangle (0, 0, 120, (int)(TEXT_SIZE*1.5)); // rectangle for back button
     }
-    public int getMusicVolume() {
+    public static int getMusicVolume() {
         return Integer.parseInt(options[0][1]);
     }
 
-    public int getEffectsVolume() {
+    public static int getEffectsVolume() {
         return Integer.parseInt(options[1][1]);
     }
 
-    public int getStartingCash() {
+    public static int getStartingCash() {
         return Integer.parseInt(options[2][1]);
     }
     // draws everything to screen

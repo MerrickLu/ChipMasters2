@@ -4,8 +4,9 @@ import java.util.*;
 public class Game implements Runnable {
 
     public static final int NUM_PLAYERS = 6;
-    public static Scanner in = new Scanner(System.in);
-
+    private SoundPlayer shuffle = new SoundPlayer("sounds/shuffle.wav");
+    private SoundPlayer deal = new SoundPlayer("sounds/deal.wav");
+    private SoundPlayer jackpot = new SoundPlayer("sounds/jackpot.wav");
     public int sb;
     public int bb;
     public int sbPos;
@@ -30,6 +31,7 @@ public class Game implements Runnable {
 
     // variables to be returned to GUI
     public Thread gameThread;
+    public boolean youLost;
     public boolean isFlop, isTurn, isRiver;
     public boolean isActionOnYou = false;
     public boolean running = true;
@@ -42,7 +44,9 @@ public class Game implements Runnable {
     ArrayList<Integer> winners = new ArrayList<Integer>();
     ArrayList<ArrayList<Card>> winnerHands = new ArrayList<ArrayList<Card>>();
 
+
     public Game(int s, int b, int st) {
+        youLost = false;
         table = new Player[NUM_PLAYERS];
         isFold = new boolean[NUM_PLAYERS];
         hasGone = new boolean[NUM_PLAYERS];
@@ -78,7 +82,7 @@ public class Game implements Runnable {
     public void startGame() {
 //        System.out.println("Position: ");
 //        yourPos = in.nextInt();
-        while(true) {
+        while(!youLost) {
             d = new Deck();
             d.shuffle();
             dealHands();
@@ -87,7 +91,16 @@ public class Game implements Runnable {
             while(startSequence) { // wait for GUI dealing sequence to finish
                 sequenceNum++;
                 try {
-                    Thread.sleep((sequenceNum > 2) ? 500 : 300);
+                    if (sequenceNum == 1) Thread.sleep(500);
+                    else if(sequenceNum == 2) {
+                        shuffle.setVolume(Settings.getEffectsVolume());
+                        shuffle.play();
+                        Thread.sleep(1500);
+                    } else {
+                        deal.setVolume(Settings.getEffectsVolume());
+                        deal.play();
+                        Thread.sleep(300);
+                    }
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -95,12 +108,17 @@ public class Game implements Runnable {
             preflop();
             processWin();
             onWinners = true;
+            jackpot.setVolume(Settings.getEffectsVolume());
+            jackpot.play();
             while(onWinners) { // wait for user key press
                 System.out.print("");
             }
             reset();
             winnerHands.clear();
             sbPos = (sbPos+1)%NUM_PLAYERS;
+            if(table[yourPos].getStack() == 0) {
+                youLost = true;
+            }
         }
     }
 
@@ -184,11 +202,10 @@ public class Game implements Runnable {
                 isActionOnYou = true;
                 actionOnYou();
             } else {
-                actionOnBot();
                 isActionOnYou = false;
+                actionOnBot();
             }
         }
-
         collect();
 
     }
@@ -239,22 +256,17 @@ public class Game implements Runnable {
     }
 
     public void actionOnBot() {
-        bot.makeMove(this);
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        bot.makeMove(this);
     }
 
     public void processWin() {
         winners = getWinnerIdx(comm.getHand());
         displayAllHandStrengths();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         System.out.println("The winners are: " + winners);
         // store winner hands to arraylist
         for (int i = 0; i<winners.size();i++) {

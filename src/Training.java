@@ -29,24 +29,19 @@ public class Training {
     private int width = GamePanel.GAME_WIDTH, height = GamePanel.GAME_HEIGHT;
     private int cardWidth = 39;
     private int cardHeight = 52;
-    private int hoveredOption = -1;
+    private boolean hovering = false;
     private Rectangle escapeRect;
     private int[][][] handLocations;
     private int[][][] cardLocations;
 
     private int[] choice;
-
-    private Game game;
     Card[][] hands;
     HashSet<Integer> cardsLeft;
 
     public boolean hasStarted = false;
-
     double[] equity;
     Thread t1;   // Using the constructor Thread(Runnable r)
-
     EquityCalculator calculator;
-
     Rectangle backRect;
 
 
@@ -122,6 +117,8 @@ public class Training {
         drawHands(g);
         drawEquities(g);
         g.setFont(Font.createFont(Font.TRUETYPE_FONT, Menu.fontFile).deriveFont(TITLE_SIZE/2));
+        if (hovering) g.setColor(Menu.crimson);
+        else g.setColor(Color.white);
         g.drawString("Back", (int) (GamePanel.GAME_WIDTH * 0.02), (int) (GamePanel.GAME_HEIGHT * 0.07)); // draw back option
 
     }
@@ -149,7 +146,7 @@ public class Training {
         for(int i = 0; i<handLocations.length; i++) {
             for(int j = 0; j<handLocations[0].length; j++) {
                 if(i == choice[0] && j == choice[1]) {
-                    g.setColor(Settings.golden);
+                    g.setColor(Color.green);
                 }
                 else g.setColor(Menu.crimson);
                 g.fillRect(handLocations[i][j][0]-2, handLocations[i][j][1]-2, cardWidth+4, cardHeight+4);
@@ -158,7 +155,7 @@ public class Training {
 
         for(int i = 0; i<comm.length; i++) {
             if(choice[0] == -1 && i == choice[1]) {
-                g.setColor(Settings.golden);
+                g.setColor(Color.green);
             }
             else {
                 g.setColor(Menu.crimson);
@@ -174,7 +171,16 @@ public class Training {
         }
     }
 
+    public void mouseMoved(MouseEvent e) {
+        int mouseX = e.getX();
+        int mouseY = e.getY();
 
+        if(backRect.contains(mouseX, mouseY)) {
+            hovering = true;
+        } else {
+            hovering = false;
+        }
+    }
 
     public void mouseClicked(MouseEvent e) throws CloneNotSupportedException {
         int mouseX = e.getX();

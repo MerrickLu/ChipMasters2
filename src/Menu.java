@@ -13,7 +13,7 @@ public class Menu {
     private final Image BG_IMAGE; // background image
     private final float TITLE_SIZE = GamePanel.GAME_HEIGHT/8; // font size scaled to panel size
     private final float TEXT_SIZE = GamePanel.GAME_HEIGHT/25;
-    private String[] options = {"Start Game", "Training Mode", "Settings"};
+    private String[] options = {"Start Game", "Odds Calculator", "Settings"};
     private Rectangle[] optionRects = new Rectangle[3];
     private int selectedOption = 3; // start at 3 to prevent becoming negative
 

@@ -54,7 +54,6 @@ public class GameGUI implements Runnable  {
             buttonRects[i] = new Rectangle((int) (width*(0.33+0.12*i)), (int)(height*0.95-width*0.1*0.4), (int)(width*0.1), (int)(width*0.1*0.4));
         }
 
-
         // escape button
         escapeRect = new Rectangle((int)(width*0.02), (int)(width*0.02), (int)(width*0.04), (int)(width*0.04));
 
@@ -85,6 +84,7 @@ public class GameGUI implements Runnable  {
             g.setColor(Color.white);
             g.fillRect(escapeRect.x, escapeRect.y, escapeRect.width, escapeRect.height);
             g.drawImage(options, buttonHeight / 2, buttonHeight / 2, buttonHeight, buttonHeight, null);
+
             // draw cards
             // your cards
             g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
@@ -155,29 +155,29 @@ public class GameGUI implements Runnable  {
             g.drawString("Your Bet: " + game.bets[game.yourPos], 175, height - 90);
             // bots
             for (int i = 0; i < cardLocations.length; i++) {
+                g.setColor(Settings.golden);
                 g.drawString(i + 1 + "'s Stack: " + game.table[i + 1].getStack(), cardLocations[i][0], cardLocations[i][1] + 75);
-
 
                 if (!game.isFold[i + 1]) {
                     g.drawString(i + 1 + "'s Bet: " + game.bets[i + 1], cardLocations[i][0], cardLocations[i][1] + 90);
                     if (game.hasGone[i + 1]) { // display bot action (call, check, raise)
+                        g.setColor(Menu.crimson);
                         g.drawString(game.actions[i + 1], cardLocations[i][0], cardLocations[i][1] + 105);
-                    }
-                    else {
-
+                        System.out.println(game.actions[i + 1]);
                     }
                 } else {
                     g.drawString("FOLD", cardLocations[i][0], cardLocations[i][1] + 90);
                 }
             }
-//            if (game.isPreFlop) {
+
+            if (game.isPreFlop) {
+                g.setColor(Settings.golden);
                 g.drawString("Small Blind", (game.sbPos == 0? 175 : cardLocations[game.sbPos-1][0]), (game.sbPos == 0? height - 50 : cardLocations[game.sbPos-1][1] + 120));
                 g.drawString("Big Blind", (game.sbPos == 5 ? 175 : cardLocations[game.sbPos][0]), (game.sbPos == 5? height-50 : cardLocations[game.sbPos][1] + 120));
-//            }
+            }
 
             // display winners
             if (!game.winners.isEmpty()) {
-
                 text = "Winner" + (game.winners.size() > 1 ? ": " : "s: ");
                 for (int i = 0, winner, ID; i < game.winners.size(); i++) {
                     winner = game.winners.get(i);
@@ -210,10 +210,6 @@ public class GameGUI implements Runnable  {
         int buttonWidth = (int)(width*0.1);
         int buttonHeight = (int)(buttonWidth*0.4);
         g.drawImage(TABLE, 0, 0, width, height, null); // draw background to fit dimensions of panel
-        g.setColor(Color.white);
-        g.fillRect(escapeRect.x, escapeRect.y, escapeRect.width, escapeRect.height);
-        // draw options button
-        g.drawImage(options, buttonHeight / 2, buttonHeight / 2, buttonHeight, buttonHeight, null);
 
         switch (i) {
             case 1:
@@ -321,7 +317,7 @@ public class GameGUI implements Runnable  {
                         isRaising = true;
                         slider.setRange(Math.min(game.minRaise, game.table[game.yourPos].getStack()), game.table[game.yourPos].getStack());
                     }
-//                    game.yourAction = "R";
+
                 } else if (buttonRects[1].contains(mouseX, mouseY)) {
                     isRaising = false;
                     if(game.canCheck()) game.yourAction = "K";
