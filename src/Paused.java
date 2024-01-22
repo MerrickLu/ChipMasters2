@@ -5,7 +5,7 @@ import java.awt.event.MouseEvent;
 public class Paused {
     private int hoveredOption = -1;
     private Image BG_IMAGE;
-    private Rectangle[] optionRects = new Rectangle[3];
+    private Rectangle[] optionRects = new Rectangle[5];
     private int width = GamePanel.GAME_WIDTH, height = GamePanel.GAME_HEIGHT;
     private final int TEXT_SIZE = 40;
     public Paused() {
@@ -13,8 +13,10 @@ public class Paused {
 
         // X button
         optionRects[0] = new Rectangle((int)(width*0.87), (int) (height*0.05), (int)(TEXT_SIZE*1.2), (int)(TEXT_SIZE*1.2));
-        optionRects[1] = new Rectangle(0, (int)(height*0.5-TEXT_SIZE*0.7), width, (int)(TEXT_SIZE*1.4));
-        optionRects[2] = new Rectangle(0, (int)(height*0.7-TEXT_SIZE*0.7), width, (int)(TEXT_SIZE*1.4));
+        optionRects[1] = new Rectangle(0, (int)(height*0.3-TEXT_SIZE*0.7), width, (int)(TEXT_SIZE*1.4));
+        optionRects[2] = new Rectangle(0, (int)(height*0.5-TEXT_SIZE*0.7), width, (int)(TEXT_SIZE*1.4));
+        optionRects[3] = new Rectangle(0, (int)(height*0.7-TEXT_SIZE*0.7), width, (int)(TEXT_SIZE*1.4));
+        optionRects[4] = new Rectangle(0, (int)(height*0.9-TEXT_SIZE*0.7), width, (int)(TEXT_SIZE*1.4));
     }
 
     public void draw(Graphics g) {
@@ -30,11 +32,20 @@ public class Paused {
 
         if(hoveredOption == 1) g.setColor(Color.red);
         else g.setColor(Color.white);
-        drawCenteredString(g, "Exit to Main Menu", optionRects[1], (int)(height*0.53), new Font("Garamond", Font.PLAIN, TEXT_SIZE));
+        drawCenteredString(g, "Exit to Main Menu", optionRects[1], (int)(height*0.33), new Font("Garamond", Font.PLAIN, TEXT_SIZE));
 
         if(hoveredOption == 2) g.setColor(Color.red);
         else g.setColor(Color.white);
-        drawCenteredString(g, "Settings", optionRects[1], (int)(height*0.73), new Font("Garamond", Font.PLAIN, TEXT_SIZE));
+        drawCenteredString(g, "Settings", optionRects[1], (int)(height*0.53), new Font("Garamond", Font.PLAIN, TEXT_SIZE));
+
+        if(hoveredOption == 3) g.setColor(Color.red);
+        else g.setColor(Color.white);
+        drawCenteredString(g, "Odds Calculator", optionRects[1], (int)(height*0.73), new Font("Garamond", Font.PLAIN, TEXT_SIZE));
+
+        if(hoveredOption == 4) g.setColor(Color.red);
+        else g.setColor(Color.white);
+        drawCenteredString(g, "Rules", optionRects[1], (int)(height*0.93), new Font("Garamond", Font.PLAIN, TEXT_SIZE));
+
     }
 
     private void drawCenteredString(Graphics g, String text, Rectangle rect, int y, Font font) {
@@ -74,6 +85,10 @@ public class Paused {
             return "Menu";
         } else if (optionRects[2].contains(mouseX, mouseY)) {
             return "Settings";
+        } else if (optionRects[3].contains(mouseX, mouseY)) {
+            return "Equity";
+        } else if (optionRects[4].contains(mouseX, mouseY)) {
+            return "Rules";
         }
         return "";
     }

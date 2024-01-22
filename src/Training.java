@@ -187,7 +187,8 @@ public class Training {
         int mouseY = e.getY();
 
         if(backRect.contains(mouseX, mouseY)) {
-            clone.onMenu = true;
+            if(clone.beforeTraining.equals("Menu")) clone.onMenu = true;
+            else if(clone.beforeTraining.equals("Paused")) clone.onPaused = true;
             clone.onTraining = false;
             t1.interrupt();
         }

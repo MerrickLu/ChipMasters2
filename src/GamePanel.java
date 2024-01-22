@@ -14,9 +14,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     public static final int GAME_WIDTH = 867;
     public static final int GAME_HEIGHT = 500;
     public static final Rectangle PANEL_BOUNDS = new Rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT);
-    public boolean onMenu = true, onSettings = false, onGame = false, onPaused = false, onTraining = false;
+    public boolean onMenu = true, onSettings = false, onGame = false, onPaused = false, onTraining = false, onRules = false;
     public String beforeSettings = "";
-
+    public String beforeTraining = "";
+    public String beforeRules = "";
     public final static String IMAGE_FOLDER_LOCATION = "images" + File.separator;
 
     public static Game gameInstance;
@@ -26,6 +27,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     public Training training;
     public GameGUI game;
     public Paused paused = new Paused();
+    public Rules rules = new Rules();
     private SoundPlayer background = new SoundPlayer("sounds/background.wav");
     public Thread gamePanelThread;
     public Thread gameThread;
@@ -34,11 +36,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     Graphics graphics;
 
 
-
-
     public GamePanel(){
-
-
         this.setFocusable(true); //make everything in this class appear on the screen
         this.addKeyListener(this); //start listening for keyboard input
         this.addMouseListener(this);
@@ -81,6 +79,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
             training.draw(g);
         }
         else if (onPaused) paused.draw(g);
+        else if (onRules) rules.draw(g);
 
     }
 
@@ -124,6 +123,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
             setCursor(paused.getCursor());
         } else if (onTraining) {
             training.mouseMoved(e);
+        } else if (onRules) {
+            rules.mouseMoved(e);
         }
     }
     @Override
@@ -136,9 +137,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     @Override
     public void mousePressed(MouseEvent e) {
         String output;
+
+        // Mouse pressed on menu
         if (onMenu) {
             output = menu.mousePressed(e);
-            if (output.equals("Settings")) {
+            if (output.equals("Settings")) { // goto settings
                 onMenu = false;
                 onSettings = true;
                 beforeSettings = "Menu";
@@ -151,15 +154,20 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                 gameGUIThread.start();
             } else if (output.equals("Odds Calculator")) {
                 onMenu = false;
+                beforeTraining = "Menu";
                 try {
                     training = new Training(this);
                 } catch(Exception d) {
                     d.printStackTrace();
                 }
                 onTraining = true;
-
+            } else if (output.equals("Rules")) {
+                onMenu = false;
+                beforeRules = "Menu";
+                onRules = true;
             }
-        } else if (onSettings) {
+
+        } else if (onSettings) { // mouse pressed on settings
             output = settings.mousePressed(e);
             if(output.equals("Back")) {
                 onSettings = false;
@@ -170,6 +178,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                 }
 
             }
+
         } else if (onGame) {
             output = game.mousePressed(e);
             if(output.equals("Escape")) {
@@ -190,12 +199,33 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                 onPaused = false;
                 onSettings = true;
                 beforeSettings = "Paused";
+            } else if(output.equals("Equity")) {
+                onPaused = false;
+                beforeTraining = "Paused";
+                try {
+                    training = new Training(this);
+                } catch(Exception d) {
+                    d.printStackTrace();
+                }
+                onTraining = true;
+            } else if(output.equals("Rules")) {
+                onPaused = false;
+                beforeRules = "Paused";
+                onRules = true;
             }
+
         }else if(onTraining) {
             try {
                 training.mouseClicked(e);
             } catch (CloneNotSupportedException ex) {
                 throw new RuntimeException(ex);
+            }
+        } else if (onRules) {
+            if(rules.mousePressed(e).equals("Back")) {
+                onRules = false;
+                if(beforeRules.equals("Menu")) onMenu = true;
+                else if(beforeRules.equals("Paused")) onPaused = true;
+
             }
         }
 
@@ -241,6 +271,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                 gameGUIThread.start();
             } else if(returned.equals("Odds Calculator")) {
                 onMenu = false;
+                beforeTraining = "Menu";
                 try {
                     training = new Training(this);
                 } catch(Exception d) {

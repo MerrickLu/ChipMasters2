@@ -13,9 +13,9 @@ public class Menu {
     private final Image BG_IMAGE; // background image
     private final float TITLE_SIZE = GamePanel.GAME_HEIGHT/8; // font size scaled to panel size
     private final float TEXT_SIZE = GamePanel.GAME_HEIGHT/25;
-    private String[] options = {"Start Game", "Odds Calculator", "Settings"};
-    private Rectangle[] optionRects = new Rectangle[3];
-    private int selectedOption = 3; // start at 3 to prevent becoming negative
+    private String[] options = {"Start Game", "Odds Calculator", "Settings", "Rules"};
+    private Rectangle[] optionRects = new Rectangle[4];
+    private int selectedOption = 4; // start at 3 to prevent becoming negative
 
 
     public Menu() {
@@ -23,7 +23,7 @@ public class Menu {
         BG_IMAGE = new ImageIcon("images/MenuBG.jpg").getImage(); // bg image path
         // create rectangles for each text option to detect mouse events later
         for (int i = 0; i < options.length; i++) {
-            int textY = (int) (GamePanel.GAME_HEIGHT * (0.47 + i * 0.13));
+            int textY = (int) (GamePanel.GAME_HEIGHT * (0.43 + i * 0.11));
             optionRects[i] = new Rectangle( // create rectangle
                     0,
                     textY - (int) (TEXT_SIZE * 0.7),
@@ -42,10 +42,10 @@ public class Menu {
         g.setColor(Color.white);
 
         // print each option
-        for (double i = 0, yCoord = 0.47; i < options.length; i++, yCoord+=0.13) {
+        for (double i = 0, yCoord = 0.43; i < options.length; i++, yCoord+=0.11) {
             text = options[(int)i];
             // display currently selected option in different color
-            if((int) i == selectedOption-3) {
+            if((int) i == selectedOption-4) {
                 g.setColor(crimson);
             } else {
                 g.setColor(Color.white);
@@ -61,18 +61,18 @@ public class Menu {
         // if up key is pressed
         if (e.getKeyCode() == KeyEvent.VK_UP) {
             selectedOption--;
-            selectedOption = selectedOption%3+3; // reset number to stay within 3-5
+            selectedOption = selectedOption%4+4; // reset number to stay within 3-5
         }
 
         // if down key is pressed
         else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             selectedOption++;
-            selectedOption = selectedOption%3+3;
+            selectedOption = selectedOption%4+4;
         }
 
         // enter to select option
         else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            return options[selectedOption-3]; // return what was selected
+            return options[selectedOption-4]; // return what was selected
         }
         return "";
     }
@@ -84,7 +84,7 @@ public class Menu {
         for (int i = 0; i < optionRects.length; i++) {
             if (optionRects[i].contains(mouseX, mouseY)) {
                 // The mouse is over this option
-                selectedOption = i+3;
+                selectedOption = i+4;
                 break;
             }
             else {
