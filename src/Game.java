@@ -12,12 +12,12 @@ public class Game implements Runnable {
     private SoundPlayer shuffle = new SoundPlayer("sounds/shuffle.wav");
     private SoundPlayer deal = new SoundPlayer("sounds/deal.wav");
     private SoundPlayer jackpot = new SoundPlayer("sounds/jackpot.wav");
-    public int sb;
-    public int bb;
+    public int sb; //Small blind amount
+    public int bb; //Big blind amount
     public int sbPos;
     public int currentPos;
     public int yourPos;
-    public int toCall;
+    public int toCall; //amount that you have to put in to call
     public int minRaise;
 
     public boolean[] isFold;
@@ -39,14 +39,14 @@ public class Game implements Runnable {
     public boolean isFlop, isTurn, isRiver;
     public boolean isActionOnYou = false;
     public boolean onWinners = false;
-    public boolean startSequence;
+    public boolean startSequence; //do we draw the sequence for dealing cards
     public int sequenceNum;
     public int[] yourHand;
     public String[] actions = new String[NUM_PLAYERS];
     public String yourAction = "";
     ArrayList<Integer> winners = new ArrayList<Integer>();
     ArrayList<ArrayList<Card>> winnerHands = new ArrayList<ArrayList<Card>>();
-    public boolean[] inGame;
+    public boolean[] inGame; //are the players out or in the game still
 
 
     public Game(int s, int b, int st) {
@@ -86,8 +86,6 @@ public class Game implements Runnable {
     }
 
     public void startGame() {
-//        System.out.println("Position: ");
-//        yourPos = in.nextInt();
         while(!youLost) {
             d = new Deck();
             d.shuffle();
@@ -131,21 +129,19 @@ public class Game implements Runnable {
     public void preflop() {
         int idx = sbPos;
         isPreFlop = true;
-        System.out.println("Your hand is: " + table[yourPos].getHand() + "\n");
+        //grab the first player after the sb that has chips
         while(table[idx].getStack() == 0) {
             idx=(idx+1)%NUM_PLAYERS;
         }
         int min = Math.min(table[idx].getStack(), sb);
         bets[idx] = min;
 
+        //if the sb has less chips than the sb amount, then they are all in
         if(min != sb) {
-            System.out.println(sbPos + " is all in ");
             isAllIn[sbPos] = true;
         }
-        else {
-            System.out.println(sbPos + " bets " + Math.min(table[sbPos].getStack(), sb));
-        }
 
+        //grab the first player after bb that has chips
         idx = (idx+1)%NUM_PLAYERS;
         while(table[idx].getStack() == 0) {
             idx=(idx+1)%NUM_PLAYERS;
@@ -153,22 +149,20 @@ public class Game implements Runnable {
         min = Math.min(table[idx].getStack(), bb);
         bets[idx] = min;
         if(min!=bb) {
-            System.out.println(sbPos + " is all in ");
             isAllIn[(sbPos+1)%NUM_PLAYERS] = true;
         }
-        else {
-            System.out.println((sbPos + 1) % NUM_PLAYERS + " bets " + bb);
-        }
+
+
         toCall = bb;
         minRaise = sb + bb;
         currentPos = (sbPos + 2) % NUM_PLAYERS;
 
         bettingRound();
+        //deal the flop
         if(checkNumPlayers()>1) {
             comm.addToHand(d.deal());
             comm.addToHand(d.deal());
             comm.addToHand(d.deal());
-            System.out.println("\nFlop comes " + comm);
             isFlop = true;
             turn();
         }
@@ -179,7 +173,6 @@ public class Game implements Runnable {
         bettingRound();
         if(checkNumPlayers()>1) {
             comm.addToHand(d.deal());
-            System.out.println("\nTurn comes " + comm);
             isTurn = true;
             river();
         }
@@ -190,7 +183,6 @@ public class Game implements Runnable {
         bettingRound();
         if(checkNumPlayers()>1) {
             comm.addToHand(d.deal());
-            System.out.println("\nRiver comes " + comm);
             isRiver = true;
             bettingRound();//last betting round
         }
@@ -259,25 +251,21 @@ public class Game implements Runnable {
 
     public void processWin() {
         winners = getWinnerIdx(comm.getHand());
-        displayAllHandStrengths();
-        System.out.println("The winners are: " + winners);
-//        if(checkNumPlayers()>1) System.out.println(allHands[winners.get(0)].getStringStrength());
-        for (int i = 0; i<NUM_PLAYERS; i++) {
-            if(table[i].getStack() == 0){
-                inGame[i] = false;
-            }
 
-            System.out.println(i + "'s hand was " + table[i].getHand());
-        }
         for (int i = 0; i < winners.size(); i++) {
-            System.out.println(winners.get(i) + " wins " + getPot() / winners.size());
             table[winners.get(i)].addToStack(getPot() / winners.size());
         }
 
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        for(int i = 0; i<NUM_PLAYERS; i++) {
+            if(table[i].getStack() == 0){
+                //at this point, if you have no chips you are not in the game anymore
+                inGame[i] = false;
+            }
+        }
 
     }
 
+    //reset the game after a round
     private void reset() {
         for(int i = 0; i<NUM_PLAYERS; i++) {
             table[i].resetHand();
@@ -289,7 +277,6 @@ public class Game implements Runnable {
             }
             hasGone[i] = false;
             isAllIn[i] = false;
-            System.out.println(i + "'s stack is now " + table[i].getStack());
             pot[i] = 0;
         }
         isFlop = false;
@@ -302,7 +289,6 @@ public class Game implements Runnable {
 
     public void check() {
         actions[currentPos] = "CHECK";
-        System.out.println(currentPos + " checks.");
         nextPos();
     }
 
@@ -317,7 +303,6 @@ public class Game implements Runnable {
             return;
         }
         actions[currentPos] = "CALL";
-        System.out.println(currentPos + " calls " + toCall);
         bets[currentPos] = toCall;
         nextPos();
     }
@@ -329,7 +314,6 @@ public class Game implements Runnable {
 
     public void fold() {
         actions[currentPos] = "FOLD";
-        System.out.println(currentPos + " folds.");
         isFold[currentPos] = true;
         nextPos();
     }
@@ -342,12 +326,10 @@ public class Game implements Runnable {
 
         if(r==table[currentPos].getStack()) {
             actions[currentPos] = "ALL IN";
-            System.out.println(currentPos + " goes all in for " + getCurrentPlayer().getStack() + ".");
             // figure out how much the new minraise is now;
             minRaise = Math.max(toCall + (r - toCall) * 2, minRaise);
             bets[currentPos] = r;
             toCall = Math.max(toCall, r);
-            System.out.println("Bet to call is " + toCall);
             nextPos();
             return;
         }
@@ -362,7 +344,6 @@ public class Game implements Runnable {
         bets[currentPos] = r;
         toCall = Math.max(toCall, r);
         actions[currentPos] = "RAISE";
-        System.out.println(currentPos + " raises to " + toCall);
         nextPos();
     }
 
@@ -412,6 +393,7 @@ public class Game implements Runnable {
         }
     }
 
+    //get the index of the winners
     public ArrayList<Integer> getWinnerIdx(ArrayList<Card> community) {
         ArrayList<Integer> maxloc = new ArrayList<>();// locations of the winners
         updateAllHand(community);
@@ -438,20 +420,7 @@ public class Game implements Runnable {
         return maxloc;
     }
 
-    public void displayAllHandStrengths() {
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" +
-                "\nHAND STRENGHTS: ");
-        for (int c = 0; c<allHands.length; c++) {
-            System.out.println(c + " has " + allHands[c].getStringStrength());
-            if(allHands[c].getBestHand() != null) {
-                for (int i = 0; i < allHands[c].getBestHand().size(); i++) {
-                    System.out.print(allHands[c].getBestHand().get(i) + ", ");
-                }
-                System.out.println();
-            }
-        }
-        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    }
+
 
     public void dealHands() {
         // deal each player 2 cards;
@@ -463,23 +432,7 @@ public class Game implements Runnable {
         yourHand[1] = table[yourPos].getHand().get(1).cardID;
     }
 
-    public String toString() {
-        String str = "";
-        str += "Pot is " + getPot() + "\n\n";
-        for (int i = 0; i < NUM_PLAYERS; i++) {
-            str += table[i] + "\nBet: " + bets[i] + "\n" + "Stack: " + table[i].getStack() + "\n\n";
-        }
-
-        System.out.println(Arrays.toString(isFold));
-        System.out.println(Arrays.toString(isAllIn));
-
-        str += ("Community cards are \n");
-        for (Card c : comm.getHand()) {
-            str += (c + "\n");
-        }
-        return str;
-    }
-
+    //collect all bets and put into pot
     public void collect() {
         for (int i = 0; i < NUM_PLAYERS; i++) {
             pot[i] += bets[i];

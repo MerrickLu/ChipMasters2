@@ -13,36 +13,36 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class Training {
-    GamePanel clone;
+    GamePanel clone; //Placeholder for GamePanel object to check conditions
 
-    private final int TEXT_SIZE = GamePanel.GAME_HEIGHT / 15;
+    private final int TEXT_SIZE = GamePanel.GAME_HEIGHT / 15; //This is the text size inside the game
     private final float TITLE_SIZE = GamePanel.GAME_HEIGHT / 8; // font size scaled to panel size
 
-    public static DecimalFormat percent = new DecimalFormat("#.00");
-    private final Image TABLE;
-    private static HashMap<Integer, Image> cardMap;
+    public static DecimalFormat percent = new DecimalFormat("#.00"); //for Rounding equities
+    private final Image TABLE; //Background image
+    private static HashMap<Integer, Image> cardMap; //Cards
 
-    private Rectangle[][] cardOptions;
-    private Rectangle[][] handOptions;
+    private Rectangle[][] cardOptions; //The 52 cards on the table.
+    private Rectangle[][] handOptions; //The 6 squares for the 6 player's hands
 
-    public Rectangle[] comm;
-    public Card[] commCard;
+    public Rectangle[] comm; //community cards
+    public Card[] commCard; //cards in the community cards
     private int width = GamePanel.GAME_WIDTH, height = GamePanel.GAME_HEIGHT;
-    private int cardWidth = 39;
-    private int cardHeight = 52;
-    private boolean hovering = false;
+    private int cardWidth = 39; //width of cards on display
+    private int cardHeight = 52; //height of cards on display
+    private boolean hovering = false; //hovering on the back rectangle
     private Rectangle escapeRect;
-    private int[][][] handLocations;
-    private int[][][] cardLocations;
+    private int[][][] handLocations; //where to draw the hands
+    private int[][][] cardLocations; //where to draw the cards
 
-    private int[] choice;
-    Card[][] hands;
-    HashSet<Integer> cardsLeft;
+    private int[] choice; //this is the current selected card slot
+    Card[][] hands; //cards in the hands
+    HashSet<Integer> cardsLeft; //cards left of the 52 on the table
 
     public boolean hasStarted = false;
-    double[] equity;
-    Thread t1;   // Using the constructor Thread(Runnable r)
-    EquityCalculator calculator;
+    double[] equity; //equity percentages
+    Thread t1;
+    EquityCalculator calculator; //Calculates equity
     Rectangle backRect;
 
 
@@ -124,11 +124,14 @@ public class Training {
 
     }
 
+    //Draw the 52 options for cards on the board
     public void drawCardOptions(Graphics g) {
         for(int i = 0; i<52; i++) {
             if(cardsLeft.contains(i+1)) g.drawImage(cardMap.get(i+1), cardLocations[i/13][i%13][0], cardLocations[i/13][i%13][1], cardWidth, cardHeight, null);
         }
     }
+
+    //draw the player's hands
     public void drawHands(Graphics g) {
         for(int i = 0; i<handLocations.length; i++) {
             g.drawImage(cardMap.get(hands[i][0].getCardID()), handLocations[i][0][0], handLocations[i][0][1], cardWidth, cardHeight, null);
@@ -137,12 +140,14 @@ public class Training {
         }
     }
 
+    //draw the 5 community cards
     public void drawComm(Graphics g) {
         for(int i = 0; i<comm.length; i++) {
             g.drawImage(cardMap.get(commCard[i].getCardID()), comm[i].x+2, comm[i].y+2, cardWidth, cardHeight, null);
         }
     }
 
+    //highlight the selected square
     public void drawChoice(Graphics g) {
         for(int i = 0; i<handLocations.length; i++) {
             for(int j = 0; j<handLocations[0].length; j++) {
@@ -168,7 +173,7 @@ public class Training {
     public void drawEquities(Graphics g) throws CloneNotSupportedException {
         g.setColor(Color.white);
         for(int i = 0; i<handLocations.length; i++) {
-            g.drawString("Equity: " + percent.format((Math.round((int)calculator.equity[i]/10))*0.1) + "%", handLocations[i][1][0] + 50,handLocations[i][1][1]+50);
+            g.drawString("Equity: " + percent.format((Math.round((int)calculator.equity[i]/10))*0.01) + "%", handLocations[i][1][0] + 50,handLocations[i][1][1]+50);
         }
     }
 
@@ -232,6 +237,7 @@ public class Training {
 
     }
 
+    //takes a card from the card options and puts it into a player's hand
     public void swapIntoHand(int i, int j) {
         if(!cardsLeft.contains(i*13 + j + 1)) {
             return;
@@ -242,11 +248,13 @@ public class Training {
         cardsLeft.add(temp.cardID);
     }
 
+    //takes a card from a player's hand and puts it back into the card options
     public void swapOutOfHand(int i, int j) {
         cardsLeft.add(hands[i][j].getCardID());
         hands[i][j] = new Card();
     }
 
+    //takes a card from the options and puts it into the community cards
     public void swapIntoComm(int i, int j) {
         if(!cardsLeft.contains(i*13 + j + 1)) {
             return;
@@ -257,6 +265,7 @@ public class Training {
         cardsLeft.add(temp.cardID);
     }
 
+    //takes a card from the community and places back into the card options
     public void swapOutOfComm(int i) {
         cardsLeft.add(commCard[i].getCardID());
         commCard[i] = new Card();

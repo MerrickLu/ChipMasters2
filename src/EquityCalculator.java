@@ -46,57 +46,65 @@ class EquityCalculator implements Runnable{
         Deck d = new Deck();
 
         double[] equities = new double[6];
-        for(int j = 0; j<10000; j++) {
-            ArrayList<Integer> maxloc = new ArrayList<>();// locations of the winners
+        double[] avg = new double[6];
+        for(int k = 0; k<10; k++) {
+            equities = new double[6];
+            for (int j = 0; j < 10000; j++) {
+                ArrayList<Integer> maxloc = new ArrayList<>();// locations of the winners
 
-            d = new Deck();
-            d.shuffle();
-            for(int i = 0; i<train.comm.length; i++) {
-                if(train.commCard[i].getCardID()!=0) {
-                    h.add((Card)train.commCard[i].clone());
-                    d.block((Card)train.commCard[i].clone());
+                d = new Deck();
+                d.shuffle();
+                for (int i = 0; i < train.comm.length; i++) {
+                    if (train.commCard[i].getCardID() != 0) {
+                        h.add((Card) train.commCard[i].clone());
+                        d.block((Card) train.commCard[i].clone());
+                    }
                 }
-            }
-            for(int i = 0; i<train.hands.length; i++) {
-                if(train.hands[i][0].getCardID()!=0 && train.hands[i][1].getCardID()!=0 ) {
-                    d.block((Card)train.hands[i][0].clone());
-                    d.block((Card)train.hands[i][1].clone());
+                for (int i = 0; i < train.hands.length; i++) {
+                    if (train.hands[i][0].getCardID() != 0 && train.hands[i][1].getCardID() != 0) {
+                        d.block((Card) train.hands[i][0].clone());
+                        d.block((Card) train.hands[i][1].clone());
+                    }
                 }
-            }
-            while(h.size()<5) {
-                h.add(d.deal());
-            }
-            for(int i = 0; i<train.hands.length; i++) {
-                if(train.hands[i][0].getCardID()!=0 && train.hands[i][1].getCardID()!=0 ) {
-                    h.add((Card)train.hands[i][0].clone());
-                    h.add((Card)train.hands[i][1].clone());
-                    tHand[i] = new TotalHand(h);
+                while (h.size() < 5) {
+                    h.add(d.deal());
+                }
+                for (int i = 0; i < train.hands.length; i++) {
+                    if (train.hands[i][0].getCardID() != 0 && train.hands[i][1].getCardID() != 0) {
+                        h.add((Card) train.hands[i][0].clone());
+                        h.add((Card) train.hands[i][1].clone());
+                        tHand[i] = new TotalHand(h);
 
-                    h.remove(h.size()-1);
-                    h.remove(h.size()-1);
+                        h.remove(h.size() - 1);
+                        h.remove(h.size() - 1);
+                    }
                 }
-            }
-            int firstGood = 0;
-            while(tHand[firstGood] == null) firstGood++;
-            maxloc.add(firstGood);
-            for (int i = firstGood+1; i < tHand.length; i++) {
-                if (tHand[i]==null)
-                    continue;
-                if (tHand[i].compareTo(tHand[maxloc.get(0)]) > 0) {
-                    // stronger hand
-                    maxloc.clear();
-                    maxloc.add(i);
-                } else if (tHand[i].compareTo(tHand[maxloc.get(0)]) == 0) {
-                    // same hand
-                    maxloc.add(i);
+                int firstGood = 0;
+                while (tHand[firstGood] == null) firstGood++;
+                maxloc.add(firstGood);
+                for (int i = firstGood + 1; i < tHand.length; i++) {
+                    if (tHand[i] == null)
+                        continue;
+                    if (tHand[i].compareTo(tHand[maxloc.get(0)]) > 0) {
+                        // stronger hand
+                        maxloc.clear();
+                        maxloc.add(i);
+                    } else if (tHand[i].compareTo(tHand[maxloc.get(0)]) == 0) {
+                        // same hand
+                        maxloc.add(i);
+                    }
                 }
+                for (int c : maxloc) {
+                    equities[c] += 1.0 / maxloc.size();
+                }
+                h.clear();
             }
-            for(int c: maxloc) {
-                equities[c]+=1.0/maxloc.size();
+            for(int i = 0; i<avg.length; i++) {
+                avg[i] += equities[i];
             }
-            h.clear();
         }
-        return equities;
+
+        return avg;
     }
 
 

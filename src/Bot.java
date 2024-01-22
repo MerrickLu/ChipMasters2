@@ -9,8 +9,8 @@ import java.util.Arrays;
 
 public class Bot {
 
-    private final int[][] range;
-    private int[] botTypes;
+    private final int[][] range; //range table the bot uses
+    private int[] botTypes; //what kind of bot is at which position
 
     public Bot() {
         super();
@@ -31,6 +31,7 @@ public class Bot {
         }
     }
 
+    //how the bot plays preflop
     private void preflop(Game g) {
         // first read the hand
         int x = g.getCurrentPlayer().getHand().get(0).getCardNum();// smaller card
@@ -127,6 +128,7 @@ public class Bot {
         }
     }
 
+    //calculates all equities
     public static double[] getEquities(Game g) {
         ArrayList<Card> comm = (ArrayList<Card>) g.comm.getHand().clone();
         double[] equities = new double[Game.NUM_PLAYERS];
