@@ -278,7 +278,7 @@ public class TotalHand {
             return getStrength().compareTo(h.getStrength());
         else {
             // just check each index until one of them is greater
-            for (int i = 0; i < best1.size(); i++) {
+            for (int i = 0; i < Math.min(best1.size(), best2.size()); i++) {
                 if (best1.get(i).getCardNum() > best2.get(i).getCardNum()) {
                     return 1;
                 } else if (best1.get(i).getCardNum() < best2.get(i).getCardNum()) {

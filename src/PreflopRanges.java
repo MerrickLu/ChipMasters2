@@ -1,4 +1,4 @@
-public class PreflopRanges {
+public class    PreflopRanges {
 
     private int[][] nine = new int[13][13];
     private int[][] fifteen = new int[13][13];

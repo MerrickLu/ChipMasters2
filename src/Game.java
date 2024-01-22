@@ -44,8 +44,11 @@ public class Game implements Runnable {
     ArrayList<Integer> winners = new ArrayList<Integer>();
     ArrayList<ArrayList<Card>> winnerHands = new ArrayList<ArrayList<Card>>();
 
+    public boolean inGame[];
+
 
     public Game(int s, int b, int st) {
+        inGame = new boolean [NUM_PLAYERS];
         youLost = false;
         table = new Player[NUM_PLAYERS];
         isFold = new boolean[NUM_PLAYERS];
@@ -66,6 +69,7 @@ public class Game implements Runnable {
         d.shuffle();
 
         for (int i = 0; i < NUM_PLAYERS; i++) {
+            inGame[i] = true;
             table[i] = new Player(st);
             isFold[i] = false;
             isAllIn[i] = false;
@@ -276,6 +280,10 @@ public class Game implements Runnable {
         }
 //        if(checkNumPlayers()>1) System.out.println(allHands[winners.get(0)].getStringStrength());
         for (int i = 0; i<NUM_PLAYERS; i++) {
+            if(table[i].getStack() == 0){
+                inGame[i] = false;
+            }
+
             System.out.println(i + "'s hand was " + table[i].getHand());
         }
         for (int i = 0; i < winners.size(); i++) {

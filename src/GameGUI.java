@@ -97,9 +97,10 @@ public class GameGUI implements Runnable  {
                         g.fillRoundRect(cardLocations[i][0] - 5, cardLocations[i][1] - 5, 105, 65, 10, 10);
                     }
                     g.setColor(Color.white);
-
-                    g.drawImage(cardMap.get(0), cardLocations[i][0], cardLocations[i][1], 45, 60, null);
-                    g.drawImage(cardMap.get(0), cardLocations[i][0] + 50, cardLocations[i][1], 45, 60, null);
+                    if(game.inGame[i+1]) {
+                        g.drawImage(cardMap.get(0), cardLocations[i][0], cardLocations[i][1], 45, 60, null);
+                        g.drawImage(cardMap.get(0), cardLocations[i][0] + 50, cardLocations[i][1], 45, 60, null);
+                    }
                 }
                 // draw flop once it comes
                 if (game.isFlop) {
@@ -142,7 +143,7 @@ public class GameGUI implements Runnable  {
                     g.setColor(Color.white);
                     g.drawString("Raise", (int) (width * 0.355), (int) (buttonY * 1.05));
                     if (game.canCheck()) g.drawString("Check", (int) (width * 0.475), (int) (buttonY * 1.05));
-                    else g.drawString("Call", (int) (width * 0.48), (int) (buttonY * 1.05));
+                    else g.drawString("Call " + game.toCall, (int) (width * 0.48)-10, (int) (buttonY * 1.05));
                     g.drawString("Fold", (int) (width * 0.6), (int) (buttonY * 1.05));
                 }
 
@@ -164,7 +165,7 @@ public class GameGUI implements Runnable  {
                         if (game.hasGone[i + 1]) { // display bot action (call, check, raise)
                             g.setColor(Menu.crimson);
                             g.drawString(game.actions[i + 1], cardLocations[i][0], cardLocations[i][1] + 105);
-                            System.out.println(game.actions[i + 1]);
+//                            System.out.println(game.actions[i + 1]);
                         }
                     } else {
                         g.drawString("FOLD", cardLocations[i][0], cardLocations[i][1] + 90);
@@ -237,7 +238,9 @@ public class GameGUI implements Runnable  {
             case 4,5,6,7,8:
                 g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
                 for(int j = 0; j <= i-4; j++) { // bot cards
-                    g.drawImage(cardMap.get(0), cardLocations[j][0], cardLocations[j][1], 45, 60, null);
+                    if(game.inGame[j+1]) {
+                        g.drawImage(cardMap.get(0), cardLocations[j][0], cardLocations[j][1], 45, 60, null);
+                    }
                 }
                 break;
             case 9:
@@ -251,10 +254,12 @@ public class GameGUI implements Runnable  {
                 g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
                 g.drawImage(cardMap.get(game.yourHand[1]), 75, height - 105, 72, 96, null);
                 for(int j = 0; j <= 4; j++) {
-                    g.drawImage(cardMap.get(0), cardLocations[j][0], cardLocations[j][1], 45, 60, null);
+                    if(game.inGame[j+1]) g.drawImage(cardMap.get(0), cardLocations[j][0], cardLocations[j][1], 45, 60, null);
                 }
                 for(int j = 0; j <= i-10; j++) { // bot second cards
-                    g.drawImage(cardMap.get(0), cardLocations[j][0]+50, cardLocations[j][1], 45, 60, null);
+                    if(game.inGame[j+1]) {
+                        g.drawImage(cardMap.get(0), cardLocations[j][0]+50, cardLocations[j][1], 45, 60, null);
+                    }
                 }
                 break;
             default:

@@ -167,7 +167,7 @@ public class Training {
     public void drawEquities(Graphics g) throws CloneNotSupportedException {
         g.setColor(Color.white);
         for(int i = 0; i<handLocations.length; i++) {
-            g.drawString("Equity: " + percent.format(((int)calculator.equity[i]/10)*0.1) + "%", handLocations[i][1][0] + 50,handLocations[i][1][1]+50);
+            g.drawString("Equity: " + percent.format((Math.round((int)calculator.equity[i]/10))*0.1) + "%", handLocations[i][1][0] + 50,handLocations[i][1][1]+50);
         }
     }
 
