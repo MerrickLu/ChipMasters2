@@ -5,7 +5,7 @@
  */
 public class PreflopRanges {
 
-    private int[][] nine = new int[13][13];
+    private int[][] nine = new int[13][13]; //9% range
     private int[][] fifteen = new int[13][13];
 
     private int[][] twenty = new int[13][13];
@@ -14,7 +14,7 @@ public class PreflopRanges {
 
     private int[][] thirtyfive = new int[13][13];
 
-    private int[][] fifty = new int[13][13];
+    private int[][] fifty = new int[13][13]; //50% range
 
     public PreflopRanges() {
         populateNine();

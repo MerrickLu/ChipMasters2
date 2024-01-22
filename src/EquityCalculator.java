@@ -30,7 +30,7 @@ class EquityCalculator implements Runnable{
 
     }
 
-
+    //get equities by dealing 10000 hands
     public double[] getEquities(Training train) throws CloneNotSupportedException {
         int handCounter = 0;
         for(int i = 0; i<train.hands.length; i++) {

@@ -14,7 +14,7 @@ public class Slider extends Rectangle {
     public static final int KNOB_DIAMETER = 20;
     public static final int RANGE_WIDTH = 200;
 
-    public int low, high;
+    public int low, high; //high and min number on the slider
 
     public double sliderPercent;
 
@@ -34,8 +34,7 @@ public class Slider extends Rectangle {
     }
 
 
-    //called from GamePanel whenever a mouse click is detected
-    //changes the current location of the ball to be wherever the mouse is located on the screen
+    //called from GamePanel whenever a mouse click is detected. Changes the location of the knob
     public void mousePressed(MouseEvent e){
         if(errorMargin.contains(e.getX(), e.getY())) {
             x = keepInBounds(e.getX());
@@ -50,6 +49,7 @@ public class Slider extends Rectangle {
 
     }
 
+    //keep the knob in the slider
     public int keepInBounds(int i) {
         if(i<range.x){
             return range.x;
@@ -70,11 +70,13 @@ public class Slider extends Rectangle {
         g.fillOval(x, y, KNOB_DIAMETER, KNOB_DIAMETER);
     }
 
+    //grab the percentage of the slider the knob is at
     public double getSliderPercent() {
         sliderPercent = (double) (x - range.x) /(RANGE_WIDTH-KNOB_DIAMETER);
         return sliderPercent;
     }
 
+    //get the number in the slider
     public int getSliderNum() {
         return (int)(low+(high-low)*(getSliderPercent()));
     }

@@ -22,11 +22,13 @@ public class Player extends Hand {
         return stack;
     }
 
+    //clear the hand
     public void resetHand() {
         super.clear();// clear hand
         inPot = 0;
     }
 
+    //add to stack
     public void addToStack(int i) {
         stack += i;
     }
