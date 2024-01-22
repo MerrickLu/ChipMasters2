@@ -107,7 +107,7 @@ public class Game implements Runnable {
                     if (sequenceNum == 1) {
                         start.setVolume(Settings.getEffectsVolume());
                         start.play();
-                        Thread.sleep(1000);
+                        Thread.sleep(1500);
                     }
                     else if(sequenceNum == 2) {
                         shuffle.setVolume(Settings.getEffectsVolume());

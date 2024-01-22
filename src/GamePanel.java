@@ -11,6 +11,7 @@ import java.io.IOException;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener, MouseListener, MouseMotionListener {
 
+    // variable declarations
     //dimensions of window
     public static final int GAME_WIDTH = 867;
     public static final int GAME_HEIGHT = 500;
@@ -34,7 +35,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     Image image;
     Graphics graphics;
 
-
+    // constructor
     public GamePanel(){
         this.setFocusable(true); //make everything in this class appear on the screen
         this.addKeyListener(this); //start listening for keyboard input
@@ -53,9 +54,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         gamePanelThread.start();
     }
 
-    //paint is a method in java.awt library that we are overriding. It is a special method - it is called automatically in the background in order to update what appears in the window. You NEVER call paint() yourself
+    // override paint
     public void paint(Graphics g){
-        //we are using "double buffering here" - if we draw images directly onto the screen, it takes time and the human eye can actually notice flashes of lag as each pixel on the screen is drawn one at a time. Instead, we are going to draw images OFF the screen, then simply move the image on screen as needed.
+        // draw using double buffering
         image = createImage(GAME_WIDTH, GAME_HEIGHT); //draw off screen
         graphics = image.getGraphics();
         try {
@@ -82,10 +83,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
     }
 
-    //handles all collision detection and responds accordingly
 
 
-    //run() method is what makes the game continue running without end. It calls other methods to move objects,  check for collision, and update the screen
+    //repetitively ran
     public void run(){
         //the CPU runs our game code too quickly - we need to slow it down! The following lines of code "force" the computer to get stuck in a loop for short intervals between calling other methods to update the screen.
         long lastTime = System.nanoTime();
@@ -107,6 +107,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         }
     }
 
+// if mouse or key event is detected, send to respect classes
     public void mouseMoved(MouseEvent e) {
         if (onMenu) {
             setCursor(Cursor.getDefaultCursor()); // default pointer
@@ -252,7 +253,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
     }
 
-    //if a key is pressed, we'll send it over to the PlayerBall class for processing
     public void keyPressed(KeyEvent e){
         String returned;
         if (onMenu) {
@@ -287,11 +287,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
         }
     }
 
-    //if a key is released, we'll send it over to the PlayerBall class for processing
+   // override
     public void keyReleased(KeyEvent e){
     }
 
-    //left empty because we don't need it; must be here because it is required to be overridded by the KeyListener interface
+    // override
     public void keyTyped(KeyEvent e){
 
     }

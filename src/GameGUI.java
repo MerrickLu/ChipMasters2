@@ -316,7 +316,7 @@ public class GameGUI implements Runnable  {
         if (!game.startSequence && escapeRect.contains(mouseX, mouseY)) {
             return "Escape";
         }
-        if(game.isActionOnYou) {
+        if(game.isActionOnYou) { // only allow button press on your turn
             if(isRaising) {
                 slider.mousePressed(e);
             }

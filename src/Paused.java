@@ -25,6 +25,7 @@ public class Paused {
         optionRects[4] = new Rectangle(0, (int)(height*0.9-TEXT_SIZE*0.7), width, (int)(TEXT_SIZE*1.4));
     }
 
+    // draw everything to screen
     public void draw(Graphics g) {
         g.drawImage(BG_IMAGE, 0, 0, width, height, null);
 
@@ -54,6 +55,7 @@ public class Paused {
 
     }
 
+// draw centered string
     private void drawCenteredString(Graphics g, String text, Rectangle rect, int y, Font font) {
         // Get the FontMetrics
         FontMetrics metrics = g.getFontMetrics(font);
@@ -64,6 +66,7 @@ public class Paused {
         g.drawString(text, x, y);
     }
 
+    // mouse moved
     public void mouseMoved(MouseEvent e) {
         int mouseX = e.getX();
         int mouseY = e.getY();
