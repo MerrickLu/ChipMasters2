@@ -1,9 +1,21 @@
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   Equity Calculator to calculate the equity of different hands, in Training Mode/Odds Calculator
+ */
+
 import java.util.ArrayList;
 
 class EquityCalculator implements Runnable{
     
     public double[] equity;
     GamePanel clone;
+
+    public EquityCalculator(GamePanel gamePanel) throws CloneNotSupportedException {
+        clone = gamePanel;
+        equity = new double[6];
+
+    }
     public void run(){
         while(true) {
 
@@ -17,12 +29,7 @@ class EquityCalculator implements Runnable{
 
 
     }
-    
-    public EquityCalculator(GamePanel gamePanel) throws CloneNotSupportedException {
-        clone = gamePanel;
-        equity = new double[6]; 
 
-    }
 
     public double[] getEquities(Training train) throws CloneNotSupportedException {
         int handCounter = 0;

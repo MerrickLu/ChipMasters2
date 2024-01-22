@@ -1,4 +1,9 @@
-public class    PreflopRanges {
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   PreflopRanges. Stores the preflopranges of different scenarios, for bots to use while making moves
+ */
+public class PreflopRanges {
 
     private int[][] nine = new int[13][13];
     private int[][] fifteen = new int[13][13];

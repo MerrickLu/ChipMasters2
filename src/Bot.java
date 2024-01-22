@@ -1,3 +1,9 @@
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   Bot class. Makes moves based on the game and a randomized personality
+ */
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -25,7 +31,7 @@ public class Bot {
         }
     }
 
-    public void preflop(Game g) {
+    private void preflop(Game g) {
         // first read the hand
         int x = g.getCurrentPlayer().getHand().get(0).getCardNum();// smaller card
         int y = g.getCurrentPlayer().getHand().get(g.getCurrentPlayer().getHand().size() - 1).getCardNum(); // bigger
@@ -70,7 +76,7 @@ public class Bot {
         }
     }
 
-    public void postFlop(Game g) {
+    private void postFlop(Game g) {
         switch (botTypes[g.currentPos]) {
             case 0:
                 checkBot(g);
@@ -84,7 +90,7 @@ public class Bot {
         }
     }
 
-    public void checkBot(Game g) {
+    private void checkBot(Game g) {
         if (g.canCheck())
             g.check();
         else {
@@ -92,11 +98,11 @@ public class Bot {
         }
     }
 
-    public void callBot(Game g) {
+    private void callBot(Game g) {
         g.call();
     }
 
-    public void superBot(Game g) {
+    private void superBot(Game g) {
         // makes decision by cheating lol
         // calculates the pot odds
         double[] equity = getEquities(g);

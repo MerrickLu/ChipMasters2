@@ -1,4 +1,8 @@
-/* Home menu */
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   Menu Class. GUI for the home menu screen
+ */
 
 import java.awt.event.KeyEvent;
 import javax.swing.*;

@@ -1,14 +1,16 @@
-/* Home menu */
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   Rules GUI screen. 4 custom-made pages to explain the game of Poker
+ */
 
-import java.awt.event.KeyEvent;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.IOException;
 
 public class Rules {
-    private final Image one, two, three, four;
+    private Image one, two, three, four;
     private final float TITLE_SIZE = GamePanel.GAME_HEIGHT/8; // font size scaled to panel size
     private Rectangle backRect;
     private Rectangle nextRect;

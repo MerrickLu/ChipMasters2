@@ -1,12 +1,14 @@
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   GamePanel class, child of JPanel. Draws the GUI Panel to screen, constantly updating it
+ */
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-
 import javax.swing.*;
-
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener, MouseListener, MouseMotionListener {
 
@@ -18,8 +20,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
     public String beforeSettings = "";
     public String beforeTraining = "";
     public String beforeRules = "";
-    public final static String IMAGE_FOLDER_LOCATION = "images" + File.separator;
-
     public static Game gameInstance;
     public Menu menu = new Menu();
     public Settings settings = new Settings();

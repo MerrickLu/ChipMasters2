@@ -1,3 +1,9 @@
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   Deck class. Made up of a Queue of Cards and various operations on the deck
+ */
+
 import java.sql.Array;
 import java.util.*;
 
@@ -11,21 +17,14 @@ public class Deck {
         }
     }
 
-    // prints the entire deck
-    public void printDeck() {
-        while (deck.peek() != null) {
-            System.out.println(deck.poll());
-        }
-    }
-
-    // shuffles
+    // shuffles the deck
     public void shuffle() {
         List<Card> shuffled = new ArrayList<Card>(deck);
         Collections.shuffle(shuffled);
         deck = new ArrayDeque<Card>(shuffled);
     }
 
-    // deals one card
+    // deals one card, from the top of the deck
     public Card deal() {
         return deck.poll();
     }

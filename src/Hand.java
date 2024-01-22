@@ -1,4 +1,9 @@
-import java.lang.reflect.Array;
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   Hand class. Represents a player's hand of 2 cards
+ */
+
 import java.util.ArrayList;
 
 public class Hand {
@@ -16,9 +21,6 @@ public class Hand {
         hand.add(c);
     }
 
-    public void sortHand() {
-        hand.sort((o1, o2) -> Integer.compare(o1.getCardNum(), o2.getCardNum()));// ascending order
-    }
 
     public ArrayList<Card> getHand() {
         return hand;

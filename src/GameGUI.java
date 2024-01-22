@@ -1,3 +1,8 @@
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   GameGUI class. Controls the GUI of the main game, referencing logic from Game
+ */
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -14,8 +19,6 @@ public class GameGUI implements Runnable  {
     private int hoveredOption = -1;
     private Rectangle buttonRects[] = new Rectangle[3];
     private Rectangle escapeRect;
-    public boolean paused = false;
-
     Slider slider;
     private boolean isRaising;
     private int[][] cardLocations;
@@ -282,13 +285,6 @@ public class GameGUI implements Runnable  {
         g.drawString(text, x, y);
     }
 
-    private void sleep(int m) {
-        try {
-            Thread.sleep(m);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     // mouse moved, called from GamePanel
     public void mouseMoved(MouseEvent e) {
