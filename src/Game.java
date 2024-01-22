@@ -4,7 +4,6 @@
    Game Class to handle the main logic of each game
 */
 
-import java.sql.Array;
 import java.util.*;
 
 public class Game implements Runnable {
@@ -36,7 +35,6 @@ public class Game implements Runnable {
     Bot bot = new Bot();
 
     // variables to be returned to GUI
-    public Thread gameThread;
     public boolean youLost;
     public boolean isFlop, isTurn, isRiver;
     public boolean isActionOnYou = false;
@@ -48,8 +46,7 @@ public class Game implements Runnable {
     public String yourAction = "";
     ArrayList<Integer> winners = new ArrayList<Integer>();
     ArrayList<ArrayList<Card>> winnerHands = new ArrayList<ArrayList<Card>>();
-
-    public boolean inGame[];
+    public boolean[] inGame;
 
 
     public Game(int s, int b, int st) {

@@ -1,12 +1,13 @@
-/* Home menu */
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   Settings GUI, can change sound volume and starting balance
+ */
 
-import java.awt.event.KeyEvent;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 
 public class Settings {
     public static Color golden = new Color(234, 198, 114); // custom font color

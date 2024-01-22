@@ -5,7 +5,6 @@
  */
 
 public class Card implements Cloneable {
-    // wsg
     public static final String CARDS = "A23456789TJQKA";
     public static final String[] SUITS = { "Clubs", "Spades", "Hearts", "Diamonds" };
 

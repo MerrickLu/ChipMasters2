@@ -1,3 +1,8 @@
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   SoundPlayer, used to play and control the volume of sounds
+ */
 import java.io.File;
 import javax.sound.sampled.*;
 

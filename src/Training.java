@@ -1,21 +1,22 @@
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   Training GUI. Calculates equities of different hands in different situations
+ */
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
 public class Training {
-
-
     GamePanel clone;
-
 
     private final int TEXT_SIZE = GamePanel.GAME_HEIGHT / 15;
     private final float TITLE_SIZE = GamePanel.GAME_HEIGHT / 8; // font size scaled to panel size
-
 
     public static DecimalFormat percent = new DecimalFormat("#.00");
     private final Image TABLE;

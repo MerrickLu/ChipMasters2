@@ -4,7 +4,6 @@
    Deck class. Made up of a Queue of Cards and various operations on the deck
  */
 
-import java.sql.Array;
 import java.util.*;
 
 public class Deck {

@@ -1,4 +1,9 @@
-import java.lang.reflect.Array;
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   TotalHand class. Logic class to compare poker hand strengths.
+ */
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
