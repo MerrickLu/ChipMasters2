@@ -1,7 +1,6 @@
-/* GameFrame class establishes the frame (window) for the game
-It is a child of JFrame because JFrame manages frames
-Runs the constructor in GamePanel class
-
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   GameFrame class, child of Jframe, used to create the GUI frame
 */
 import java.awt.*;
 import javax.swing.*;

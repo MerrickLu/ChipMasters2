@@ -1,3 +1,9 @@
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   Game Class to handle the main logic of each game
+*/
+
 import java.sql.Array;
 import java.util.*;
 
@@ -34,7 +40,6 @@ public class Game implements Runnable {
     public boolean youLost;
     public boolean isFlop, isTurn, isRiver;
     public boolean isActionOnYou = false;
-    public boolean running = true;
     public boolean onWinners = false;
     public boolean startSequence;
     public int sequenceNum;
@@ -42,8 +47,6 @@ public class Game implements Runnable {
     public String[] actions = new String[NUM_PLAYERS];
     public String yourAction = "";
     ArrayList<Integer> winners = new ArrayList<Integer>();
-    ArrayList<ArrayList<Card>> winnerHands = new ArrayList<ArrayList<Card>>();
-
 
     public Game(int s, int b, int st) {
         youLost = false;
@@ -114,7 +117,6 @@ public class Game implements Runnable {
                 System.out.print("");
             }
             reset();
-            winnerHands.clear();
             sbPos = (sbPos+1)%NUM_PLAYERS;
             if(table[yourPos].getStack() == 0) {
                 youLost = true;
@@ -211,24 +213,11 @@ public class Game implements Runnable {
     }
 
     public void actionOnYou() {
-        // print msg depending on if you can check
-        if (canCheck())
-            System.out.println("""
-					[R] - Raise
-					[K] - Check
-					[F] - Fold""");
-
-        else
-            System.out.println("""
-					[R] - Raise
-					[C] - Call
-					[F] - Fold""");
 
         while (true) {
             // do nothing until user does something
             System.out.print(yourAction); // DO NOT ERASE THIS LINE FOR SOME REASON IT BUGS OUT
             if (!yourAction.equals("")) {
-//                System.out.println("you chose " + yourAction);
                 break;
             }
         }
@@ -268,12 +257,6 @@ public class Game implements Runnable {
         winners = getWinnerIdx(comm.getHand());
         displayAllHandStrengths();
         System.out.println("The winners are: " + winners);
-        // store winner hands to arraylist
-        for (int i = 0; i<winners.size();i++) {
-//            System.out.println(table[winners.get(i)].getHand());
-            winnerHands.add(table[winners.get(i)].getHand());
-            System.out.println(winnerHands);
-        }
 //        if(checkNumPlayers()>1) System.out.println(allHands[winners.get(0)].getStringStrength());
         for (int i = 0; i<NUM_PLAYERS; i++) {
             System.out.println(i + "'s hand was " + table[i].getHand());

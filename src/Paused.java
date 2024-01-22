@@ -1,3 +1,9 @@
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   Paused GUI, can navigate to game, settings, rules, calculator
+ */
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;

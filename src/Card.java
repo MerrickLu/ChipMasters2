@@ -1,9 +1,15 @@
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   Card class. Represents a basic playing card
+ */
+
 public class Card implements Cloneable {
     // wsg
     public static final String CARDS = "A23456789TJQKA";
     public static final String[] SUITS = { "Clubs", "Spades", "Hearts", "Diamonds" };
 
-    public int cardID;
+    public int cardID; // used in GUI
     private int cardNum; // number from 0-12
     private int cardSuit; // 0 - diamonds, 1 - clubs, 2 - hearts, 3 - spades
 

@@ -1,3 +1,8 @@
+/* Authors: Andy Sun & Merrick Lu
+   Date: December 19-January 22, 2024
+   Project: "Chip Masters": GUI Poker
+   Player class, child of Hand. Represents a player at the table
+ */
 public class Player extends Hand {
     private int inPot;
     private int stack;
