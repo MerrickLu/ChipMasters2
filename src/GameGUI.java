@@ -160,18 +160,20 @@ public class GameGUI implements Runnable  {
                 g.drawString("Your Bet: " + game.bets[game.yourPos], 175, height - 90);
                 // bots
                 for (int i = 0; i < cardLocations.length; i++) {
-                    g.setColor(Settings.golden);
-                    g.drawString(i + 1 + "'s Stack: " + game.table[i + 1].getStack(), cardLocations[i][0], cardLocations[i][1] + 75);
+                    if(game.inGame[i+1]) {
+                        g.setColor(Settings.golden);
+                        g.drawString(i + 1 + "'s Stack: " + game.table[i + 1].getStack(), cardLocations[i][0], cardLocations[i][1] + 75);
 
-                    if (!game.isFold[i + 1]) {
-                        g.drawString(i + 1 + "'s Bet: " + game.bets[i + 1], cardLocations[i][0], cardLocations[i][1] + 90);
-                        if (game.hasGone[i + 1]) { // display bot action (call, check, raise)
-                            g.setColor(Menu.crimson);
-                            g.drawString(game.actions[i + 1], cardLocations[i][0], cardLocations[i][1] + 105);
+                        if (!game.isFold[i + 1]) {
+                            g.drawString(i + 1 + "'s Bet: " + game.bets[i + 1], cardLocations[i][0], cardLocations[i][1] + 90);
+                            if (game.hasGone[i + 1]) { // display bot action (call, check, raise)
+                                g.setColor(Menu.crimson);
+                                g.drawString(game.actions[i + 1], cardLocations[i][0], cardLocations[i][1] + 105);
 //                            System.out.println(game.actions[i + 1]);
+                            }
+                        } else {
+                            g.drawString("FOLD", cardLocations[i][0], cardLocations[i][1] + 90);
                         }
-                    } else {
-                        g.drawString("FOLD", cardLocations[i][0], cardLocations[i][1] + 90);
                     }
                 }
 
@@ -249,7 +251,7 @@ public class GameGUI implements Runnable  {
             case 9:
                 g.drawImage(cardMap.get(game.yourHand[0]), 15, height - 105, 72, 96, null);
                 for(int j = 0; j < i-4; j++) {
-                    g.drawImage(cardMap.get(0), cardLocations[j][0], cardLocations[j][1], 45, 60, null);
+                    if(game.inGame[j+1]) g.drawImage(cardMap.get(0), cardLocations[j][0], cardLocations[j][1], 45, 60, null);
                 }
                 g.drawImage(cardMap.get(game.yourHand[1]), 75, height - 105, 72, 96, null); // your second card
                 break;
