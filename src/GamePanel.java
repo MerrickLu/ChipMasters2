@@ -277,6 +277,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
                     d.printStackTrace();
                 }
                 onTraining = true;
+            } else if(returned.equals("Rules")) {
+                onRules = true;
+                onMenu = false;
+                beforeRules = "Menu";
             }
         } else if (onGame) {
             game.keyPressed(e);

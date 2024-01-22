@@ -216,7 +216,7 @@ public class GameGUI implements Runnable  {
 
             g.setColor(Menu.crimson);
             g.setFont(new Font("Garamond", Font.PLAIN, 40));
-            g.drawString("YOU RAN OUT OF CHIPS!", (int) (width * 0.4), (int) (height * 0.5));
+            g.drawString("YOU RAN OUT OF CHIPS!", (int) (width * 0.25), (int) (height * 0.5));
             g.setFont(new Font("Garamond", Font.PLAIN, 25));
             g.drawString("Start another game, or review your plays in the calculator", (int) (width * 0.2), (int) (height * 0.5+43));
         }
